@@ -1,0 +1,59 @@
+/* ----------------------------------------------------
+ * Custom Micro-Animations & Dropdown Transitions
+ * Website Kelas XI PPLG 2
+ * ---------------------------------------------------- */
+
+/* Dropdown Animation Keyframes */
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes dropdownFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+}
+
+/* Subtle Floating Effect for Hero / Badges */
+@keyframes floatSlow {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+/* Utilities Class */
+.animate-dropdown-in {
+    animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-dropdown-out {
+    animation: dropdownFadeOut 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-float {
+    animation: floatSlow 4s ease-in-out infinite;
+}
+
+/* Custom Scrollbar for Dropdown Menu */
+.custom-dropdown-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+.custom-dropdown-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}

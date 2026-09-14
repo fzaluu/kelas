@@ -6,19 +6,42 @@ use App\Models\Attendance\AttendanceSession;
 use App\Models\Attendance\AttendanceRecord;
 use App\Models\Core\Member;
 use App\Models\Core\ActivityLog;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class AttendanceQRService
 {
     /**
+     * Generate Kode Token Ramah Manusia (6 Karakter Kapital Acak tanpa karakter membingungkan)
+     */
+    protected function generateHumanFriendlyToken(int $length = 6): string
+    {
+        // Karakter yang aman diketik (tanpa 0, O, 1, I, L)
+        $characters = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+        $token = '';
+        $maxIndex = strlen($characters) - 1;
+
+        for ($i = 0; $i < $length; $i++) {
+            $token .= $characters[random_int(0, $maxIndex)];
+        }
+
+        return $token;
+    }
+
+    /**
      * Membuka Sesi Absensi Baru & Melakukan Inisialisasi Record ALPA untuk Seluruh Siswa Kelas
      */
     public function createSession(int $classId, string $title, int $durationMinutes, int $creatorUserId): AttendanceSession
     {
+        // Tutup sesi lama yang masih OPEN di kelas tersebut
+        AttendanceSession::where('class_id', $classId)
+            ->where('status', 'OPEN')
+            ->update(['status' => 'CLOSED']);
+
         $now = Carbon::now('Asia/Jakarta');
-        $rawToken = Str::random(32);
+        
+        // Generate token 6 digit yang mudah diketik
+        $rawToken = $this->generateHumanFriendlyToken(6);
 
         $session = AttendanceSession::create([
             'class_id' => $classId,
@@ -54,7 +77,7 @@ class AttendanceQRService
             'result' => 'SUCCESS',
         ]);
 
-        // Simpan raw token secara temporer di instance agar bisa ditampilkan sebagai QR di view pertama kali
+        // Simpan raw token secara temporer di instance agar bisa ditampilkan sebagai QR & fallback text di view
         $session->raw_token = $rawToken;
 
         return $session;
@@ -77,8 +100,8 @@ class AttendanceQRService
             return ['success' => false, 'message' => 'Waktu absensi telah berakhir. Sesi ditutup otomatis.'];
         }
 
-        // Validasi match token hash
-        if (!Hash::check($scannedToken, $session->token_hash)) {
+        // Validasi match token hash (Mendukung input uppercase)
+        if (!Hash::check(strtoupper(trim($scannedToken)), $session->token_hash)) {
             ActivityLog::create([
                 'actor_user_id' => $authUserId,
                 'action' => 'attendance.scan',
@@ -89,7 +112,7 @@ class AttendanceQRService
                 'user_agent' => $userAgent,
             ]);
 
-            return ['success' => false, 'message' => 'Token QR tidak valid atau sudah kadaluarsa.'];
+            return ['success' => false, 'message' => 'Token QR / Kode manual tidak valid atau sudah kadaluarsa.'];
         }
 
         // Ambil identitas member berdasarkan user yang login (Security Rule: Identitas bukan dari QR)
@@ -99,6 +122,11 @@ class AttendanceQRService
 
         if (!$member) {
             return ['success' => false, 'message' => 'Akun Anda tidak terhubung dengan data anggota siswa mana pun.'];
+        }
+
+        // Validasi Class Scope: Siswa harus berada di kelas yang sama dengan sesi absensi
+        if ((int) $member->class_id !== (int) $session->class_id) {
+            return ['success' => false, 'message' => 'Anda tidak terdaftar di kelas sesi absensi ini.'];
         }
 
         $record = AttendanceRecord::where('attendance_session_id', $sessionId)

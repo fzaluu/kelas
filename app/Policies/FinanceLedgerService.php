@@ -38,16 +38,15 @@ class FinanceLedgerService
         ?string $referenceNo = null
     ): FinancialTransaction {
         $txDate = $transactionDate ? Carbon::parse($transactionDate) : Carbon::now('Asia/Jakarta');
-        $upperType = strtoupper($type);
 
-        // Jika Pengeluaran (EXPENSE) melebihi threshold Rp 200.000, butuh persetujuan
-        $requiresApproval = ($upperType === 'EXPENSE' && (float) $amount > $this->approvalThreshold);
+        // Jika transaksi Pengeluaran (EXPENSE) melebihi threshold, status PENDING_APPROVAL
+        $requiresApproval = ($type === 'EXPENSE' && $amount > $this->approvalThreshold);
         $status = $requiresApproval ? 'PENDING_APPROVAL' : 'APPROVED';
 
         $transaction = FinancialTransaction::create([
             'class_id' => $classId,
             'category_id' => $categoryId,
-            'type' => $upperType,
+            'type' => $type,
             'amount' => $amount,
             'transaction_date' => $txDate->toDateString(),
             'description' => $description,
