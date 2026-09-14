@@ -1,38 +1,141 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Website Kelas PPLG</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Masuk Akun - Portal XI PPLG 2</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-    <div style="max-width: 400px; margin: 50px auto; font-family: sans-serif;">
-        <h2>Login Member Area</h2>
+<body class="bg-gradient-to-br from-blue-50/70 via-slate-100 to-indigo-50/60 min-h-screen flex items-center justify-center p-4 sm:p-6 antialiased font-sans">
 
-        @if ($errors->any())
-            <div style="color: red; margin-bottom: 15px;">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+    <!-- Decorative Soft Blobs -->
+    <div class="fixed top-1/4 -left-20 w-80 h-80 bg-blue-400/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="fixed bottom-1/4 -right-20 w-80 h-80 bg-indigo-400/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Login Box Card (Compact, Minimalis, & Clean) -->
+    <div class="relative z-10 w-full max-w-sm bg-white p-6 sm:p-8 rounded-3xl shadow-xl shadow-blue-950/5 border border-slate-200/80 space-y-5">
+        
+        <!-- Header & Back Link -->
+        <div class="flex justify-between items-center">
+            <a href="{{ route('home') }}" class="text-xs font-semibold text-slate-400 hover:text-blue-600 transition flex items-center space-x-1">
+                <span>← Kembali</span>
+            </a>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 uppercase border border-blue-100">
+                SMKN 4 Tasikmalaya
+            </span>
+        </div>
+
+        <div class="text-center space-y-1.5">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-blue-500/20">
+                P2
             </div>
-        @endif
+            <div>
+                <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Ruang Digital</h1>
+                <p class="text-[11px] text-slate-500">Masukkan email atau NISN Anda</p>
+            </div>
+        </div>
 
-        <form action="{{ route('login.post') }}" method="POST">
+        <!-- ⚠️ NOTIFIKASI ERROR SLIM & RINGKAS -->
+        
+        <!-- 1. Lockout / Throttle (Salah 5x) -->
+        @error('throttle')
+            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center space-x-2">
+                <span>⏳</span>
+                <span class="text-[11px] font-medium leading-tight">{{ $message }}</span>
+            </div>
+        @enderror
+
+        <!-- 2. Email Benar, Password Salah (+ Link Forgot Password Inline) -->
+        @error('password_error')
+            <div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between">
+                <div class="flex items-center space-x-1.5">
+                    <span>⚠️</span>
+                    <span class="text-[11px] font-medium">{{ $message }}</span>
+                </div>
+                <a href="{{ route('public.contact') }}" class="text-[10px] font-bold text-rose-800 hover:underline whitespace-nowrap ml-2">
+                    Lupa Password?
+                </a>
+            </div>
+        @enderror
+
+        <!-- 3. Account Not Found -->
+        @error('identity_error')
+            <div class="p-3 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-xs flex items-center space-x-2">
+                <span>🚫</span>
+                <span class="text-[11px] font-medium">{{ $message }}</span>
+            </div>
+        @enderror
+
+        <!-- FORM LOGIN -->
+        <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
             @csrf
-            <div style="margin-bottom: 15px;">
-                <label>Username atau Email:</label><br>
-                <input type="text" name="login" value="{{ old('login') }}" required style="width: 100%; padding: 8px;">
+
+            <!-- Identity Input -->
+            <div class="space-y-1">
+                <label for="identity" class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                    EMAIL / NISN
+                </label>
+                <input type="text" 
+                       id="identity" 
+                       name="identity" 
+                       value="{{ old('identity') }}" 
+                       required 
+                       autofocus 
+                       placeholder="nama@smkn4tasikmalaya.sch.id" 
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label>Password:</label><br>
-                <input type="password" name="password" required style="width: 100%; padding: 8px;">
+            <!-- Password Input dengan Vanilla JS Toggle -->
+            <div class="space-y-1">
+                <label for="password" class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                    KATA SANDI
+                </label>
+                <div class="relative">
+                    <input type="password" 
+                           id="passwordInput" 
+                           name="password" 
+                           required 
+                           placeholder="••••••••" 
+                           class="w-full px-3.5 py-2.5 pr-10 rounded-xl border border-slate-200 bg-slate-50/50 text-xs focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                    
+                    <!-- Tombol Toggle Mata (Vanilla JS) -->
+                    <button type="button" 
+                            id="togglePasswordBtn"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 p-1 focus:outline-none transition cursor-pointer">
+                        
+                        <!-- 👁️ Mata Terbuka (Default Password Dots) -->
+                        <svg id="eyeOpenIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+
+                        <!-- 🙈 Mata Dicoret (Saat Password Text) -->
+                        <svg id="eyeSlashIcon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 013.682-.863c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m-6.621-1.396a3 3 0 104.243-4.243M3 3l18 18"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
-            <button type="submit" style="padding: 10px 15px;">Login</button>
+            <div class="flex items-center justify-between text-xs pt-0.5">
+                <label class="flex items-center space-x-2 text-slate-600 cursor-pointer select-none">
+                    <input type="checkbox" name="remember" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-[11px]">Ingat Sesi Saya</span>
+                </label>
+            </div>
+
+            <button type="submit" 
+                    @if($errors->has('throttle')) disabled @endif
+                    class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-600/20 transition hover:scale-[1.01] active:scale-[0.99]">
+                MASUK SEKARANG →
+            </button>
         </form>
+
+        <div class="pt-2 border-t border-slate-100 text-center text-[11px] text-slate-400">
+            Kendala akun? Hubungi <a href="{{ route('public.contact') }}" class="text-blue-600 font-semibold hover:underline">Pengurus Kelas</a>
+        </div>
+
     </div>
+
 </body>
 </html>
