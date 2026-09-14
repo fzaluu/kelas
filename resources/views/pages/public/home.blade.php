@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- HERO SECTION (TRANSPARENT FLOATING NAVBAR FIT) -->
-<section class="relative bg-slate-900 text-white pt-32 pb-24 overflow-hidden">
+<section class="relative bg-slate-900 text-white pt-12 pb-24 overflow-hidden">
     <!-- Background Image dengan Overlay Gelap -->
     <div class="absolute inset-0 z-0">
         <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2070&auto=format&fit=crop" 

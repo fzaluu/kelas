@@ -22,7 +22,7 @@
 
     @include('partials.public-navbar')
 
-    <main class="flex-grow">
+    <main class="flex-grow pt-16">
         @yield('content')
     </main>
 

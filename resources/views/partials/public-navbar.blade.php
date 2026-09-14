@@ -1,6 +1,6 @@
 <nav x-data="{ openMobile: false, openDropdown: null }" 
      @click.away="openDropdown = null"
-     class="bg-white/90 backdrop-blur-md fixed top-0 left-0 right-0 z-50 border-b border-slate-100 shadow-sm transition-all duration-300">
+     class="bg-white/95 backdrop-blur-md fixed top-0 left-0 right-0 z-50 border-b border-slate-100 shadow-sm transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
             
@@ -37,12 +37,33 @@
                     <div x-show="openDropdown === 'info'" 
                          x-transition:enter="animate-dropdown-in"
                          x-transition:leave="animate-dropdown-out"
-                         class="absolute left-0 w-60 bg-white text-slate-700 rounded-2xl shadow-xl border border-slate-100 py-3 z-50" style="display: none;">
-                        <a href="{{ route('public.information.announcements') }}" class="block px-4 py-2 text-xs font-semibold hover:bg-blue-50 hover:text-blue-600 transition">📢 Pengumuman</a>
-                        <a href="{{ route('public.information.agendas') }}" class="block px-4 py-2 text-xs font-semibold hover:bg-blue-50 hover:text-blue-600 transition">📅 Agenda Kelas</a>
-                        <a href="{{ route('public.information.tasks') }}" class="block px-4 py-2 text-xs font-semibold hover:bg-blue-50 hover:text-blue-600 transition">📚 Tugas Akademik</a>
+                         class="absolute left-0 w-60 bg-white text-slate-700 rounded-2xl shadow-xl border border-slate-100 py-2 z-50" style="display: none;">
+                        
+                        <!-- Pengumuman -->
+                        <a href="{{ route('public.information.announcements') }}" 
+                           class="block px-4 py-2 text-xs font-semibold transition {{ request()->routeIs('public.information.announcements') ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-slate-50 hover:text-blue-600' }}">
+                            📢 Pengumuman
+                        </a>
+
+                        <!-- Agenda -->
+                        <a href="{{ route('public.information.agendas') }}" 
+                           class="block px-4 py-2 text-xs font-semibold transition {{ request()->routeIs('public.information.agendas') ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-slate-50 hover:text-blue-600' }}">
+                            📅 Agenda Kelas
+                        </a>
+
+                        <!-- Tugas Akademik -->
+                        <a href="{{ route('public.information.tasks') }}" 
+                           class="block px-4 py-2 text-xs font-semibold transition {{ request()->routeIs('public.information.tasks') ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-slate-50 hover:text-blue-600' }}">
+                            📚 Tugas Akademik
+                        </a>
+
                         <div class="border-t border-slate-100 my-1"></div>
-                        <a href="{{ route('public.information.schedules') }}" class="block px-4 py-2 text-xs font-semibold hover:bg-blue-50 hover:text-blue-600 transition">🗓️ Jadwal Pelajaran & Piket</a>
+
+                        <!-- Jadwal -->
+                        <a href="{{ route('public.information.schedules') }}" 
+                           class="block px-4 py-2 text-xs font-semibold transition {{ request()->routeIs('public.information.schedules') ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-slate-50 hover:text-blue-600' }}">
+                            🗓️ Jadwal Pelajaran & Piket
+                        </a>
                     </div>
                 </div>
 
@@ -56,10 +77,25 @@
                     <div x-show="openDropdown === 'gallery'" 
                          x-transition:enter="animate-dropdown-in"
                          x-transition:leave="animate-dropdown-out"
-                         class="absolute left-0 w-52 bg-white text-slate-700 rounded-2xl shadow-xl border border-slate-100 py-3 z-50" style="display: none;">
-                        <a href="{{ route('public.gallery.activities') }}" class="block px-4 py-2 text-xs font-semibold hover:bg-blue-50 hover:text-blue-600 transition">📸 Kegiatan Kelas</a>
-                        <a href="{{ route('public.gallery.projects') }}" class="block px-4 py-2 text-xs font-semibold hover:bg-blue-50 hover:text-blue-600 transition">💻 Karya & Project</a>
-                        <a href="{{ route('public.gallery.appreciations') }}" class="block px-4 py-2 text-xs font-semibold hover:bg-blue-50 hover:text-blue-600 transition">🏆 Prestasi Siswa</a>
+                         class="absolute left-0 w-52 bg-white text-slate-700 rounded-2xl shadow-xl border border-slate-100 py-2 z-50" style="display: none;">
+                        
+                        <!-- Kegiatan -->
+                        <a href="{{ route('public.gallery.activities') }}" 
+                           class="block px-4 py-2 text-xs font-semibold transition {{ request()->routeIs('public.gallery.activities') ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-slate-50 hover:text-blue-600' }}">
+                            📸 Kegiatan Kelas
+                        </a>
+
+                        <!-- Project Showcase -->
+                        <a href="{{ route('public.gallery.projects') }}" 
+                           class="block px-4 py-2 text-xs font-semibold transition {{ request()->routeIs('public.gallery.projects') ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-slate-50 hover:text-blue-600' }}">
+                            💻 Karya & Project
+                        </a>
+
+                        <!-- Prestasi -->
+                        <a href="{{ route('public.gallery.appreciations') }}" 
+                           class="block px-4 py-2 text-xs font-semibold transition {{ request()->routeIs('public.gallery.appreciations') ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-slate-50 hover:text-blue-600' }}">
+                            🏆 Prestasi Siswa
+                        </a>
                     </div>
                 </div>
 
