@@ -23,7 +23,7 @@ class CoreSeeder extends Seeder
             'status' => 'ACTIVE',
         ]);
 
-        // 2. Seed Roles
+        // 2. Seed 6 Roles Utama Sistem (Tanpa General)
         $roleDev = Role::create([
             'name' => 'Development',
             'slug' => 'development',
@@ -33,15 +33,36 @@ class CoreSeeder extends Seeder
 
         $roleTeacher = Role::create([
             'name' => 'Wali Kelas',
-            'slug' => 'homeroom_teacher',
+            'slug' => 'walikelas',
             'description' => 'Wali Kelas & Pembimbing Akademik',
+            'is_system' => true,
+        ]);
+
+        $roleLeader = Role::create([
+            'name' => 'Ketua Kelas',
+            'slug' => 'ketuakelas',
+            'description' => 'Ketua Kelas / Pengurus Operasional Harian',
+            'is_system' => true,
+        ]);
+
+        $roleTreasurer = Role::create([
+            'name' => 'Bendahara',
+            'slug' => 'bendahara',
+            'description' => 'Pengurus Keuangan & Kas Kelas',
+            'is_system' => true,
+        ]);
+
+        $roleSecretary = Role::create([
+            'name' => 'Sekretaris',
+            'slug' => 'sekretaris',
+            'description' => 'Pengurus Administrasi & Notulensi Kelas',
             'is_system' => true,
         ]);
 
         $roleStudent = Role::create([
             'name' => 'Siswa',
-            'slug' => 'student',
-            'description' => 'Anggota Kelas / Siswa',
+            'slug' => 'siswa',
+            'description' => 'Anggota Kelas / Siswa Biasa',
             'is_system' => true,
         ]);
 

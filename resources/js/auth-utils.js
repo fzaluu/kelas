@@ -27,3 +27,8 @@ export function initPasswordToggle(inputId, btnId, openIconId, slashIconId) {
         });
     }
 }
+
+// Automatic Initialization saat DOM Siap
+document.addEventListener('DOMContentLoaded', () => {
+    initPasswordToggle('password', 'togglePasswordBtn', 'eyeOpenIcon', 'eyeSlashIcon');
+});
