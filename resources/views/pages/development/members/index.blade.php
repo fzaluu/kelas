@@ -12,10 +12,28 @@
             <p class="text-xs text-slate-500 mt-1">Kelola biodata siswa, NIS, NISN, dan tautan akun pengguna.</p>
         </div>
 
-        <a href="{{ route('development.members.create') }}" class="inline-flex items-center justify-center space-x-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-600/20">
-            <span>➕</span>
-            <span>Tambah Siswa Baru</span>
-        </a>
+        <div class="flex items-center space-x-3">
+            <!-- 🛎️ Tombol Persetujuan Pendaftaran Mandiri -->
+            @php
+                $pendingCount = \App\Models\Core\User::where('approval_status', 'PENDING')->count();
+            @endphp
+            <a href="{{ route('development.approvals.index') }}" 
+               class="relative inline-flex items-center space-x-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold transition">
+                <span>🛎️</span>
+                <span>Persetujuan Akun</span>
+                @if($pendingCount > 0)
+                    <span class="ml-1 bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black animate-pulse">
+                        {{ $pendingCount }}
+                    </span>
+                @endif
+            </a>
+
+            <!-- Tombol Tambah Manual -->
+            <a href="{{ route('development.members.create') }}" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-600/20">
+                <span>➕</span>
+                <span>Tambah Siswa Baru</span>
+            </a>
+        </div>
     </div>
 
     <!-- Search & Filter Bar -->

@@ -1,8 +1,8 @@
 import { initPasswordToggle } from './auth-utils';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Inisialisasi Toggle Password
-    initPasswordToggle('password', 'togglePasswordBtn', 'eyeOpenIcon', 'eyeSlashIcon');
+    // 1. Inisialisasi Toggle Password (Otomatis deteksi semua form: Login, Register, & Admin User)
+    initPasswordToggle();
 
     // 2. Inisialisasi Reusable Live Search Dropdown
     initLiveSearchSelect();

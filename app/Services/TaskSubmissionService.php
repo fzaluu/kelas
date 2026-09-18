@@ -25,15 +25,15 @@ class TaskSubmissionService
         $now = Carbon::now('Asia/Jakarta');
 
         $task = Task::create([
-            'class_id' => $classId,
-            'subject_id' => $subjectId,
-            'title' => $title,
-            'description' => $description,
+            'class_id'     => $classId,
+            'subject_id'   => $subjectId,
+            'title'        => $title,
+            'description'  => $description,
             'instructions' => $instructions,
-            'start_at' => $now,
-            'deadline' => Carbon::parse($deadline, 'Asia/Jakarta'),
-            'status' => 'PUBLISHED',
-            'created_by' => $creatorUserId,
+            'start_at'     => $now,
+            'deadline'     => Carbon::parse($deadline, 'Asia/Jakarta'),
+            'status'       => 'PUBLISHED',
+            'created_by'   => $creatorUserId,
             'published_at' => $now,
         ]);
 
@@ -44,19 +44,19 @@ class TaskSubmissionService
 
         foreach ($members as $member) {
             TaskSubmission::create([
-                'task_id' => $task->id,
+                'task_id'   => $task->id,
                 'member_id' => $member->id,
-                'status' => 'NOT_STARTED',
+                'status'    => 'NOT_STARTED',
             ]);
         }
 
         // Audit Log
         ActivityLog::create([
             'actor_user_id' => $creatorUserId,
-            'action' => 'task.publish',
+            'action'        => 'task.publish',
             'resource_type' => 'task',
-            'resource_id' => $task->id,
-            'result' => 'SUCCESS',
+            'resource_id'   => $task->id,
+            'result'        => 'SUCCESS',
         ]);
 
         return $task;
@@ -100,24 +100,24 @@ class TaskSubmissionService
 
         $submission->update([
             'submitted_at' => $now,
-            'status' => $newStatus,
+            'status'       => $newStatus,
         ]);
 
         // Audit Trail
         ActivityLog::create([
             'actor_user_id' => $authUserId,
-            'action' => 'task.submit',
+            'action'        => 'task.submit',
             'resource_type' => 'task_submission',
-            'resource_id' => $submission->id,
-            'result' => 'SUCCESS',
-            'ip' => $ip,
-            'user_agent' => $userAgent,
+            'resource_id'   => $submission->id,
+            'result'        => 'SUCCESS',
+            'ip'            => $ip,
+            'user_agent'    => $userAgent,
         ]);
 
         return [
-            'success' => true,
-            'message' => $isLate ? 'Tugas berhasil dikumpulkan (Terlambat).' : 'Tugas berhasil dikumpulkan tepat waktu.',
-            'status' => $newStatus,
+            'success'      => true,
+            'message'      => $isLate ? 'Tugas berhasil dikumpulkan (Terlambat).' : 'Tugas berhasil dikumpulkan tepat waktu.',
+            'status'       => $newStatus,
             'submitted_at' => $now->format('d M Y, H:i WIB'),
         ];
     }
@@ -135,21 +135,21 @@ class TaskSubmissionService
         $submission = TaskSubmission::findOrFail($submissionId);
 
         $submission->update([
-            'grade' => $grade,
-            'feedback' => $feedback,
+            'grade'        => $grade,
+            'feedback'     => $feedback,
             'appreciation' => $appreciation,
-            'status' => 'GRADED',
-            'graded_by' => $graderUserId,
-            'graded_at' => Carbon::now('Asia/Jakarta'),
+            'status'       => 'GRADED',
+            'graded_by'    => $graderUserId,
+            'graded_at'    => Carbon::now('Asia/Jakarta'),
         ]);
 
         // Audit Log
         ActivityLog::create([
             'actor_user_id' => $graderUserId,
-            'action' => 'task.grade',
+            'action'        => 'task.grade',
             'resource_type' => 'task_submission',
-            'resource_id' => $submission->id,
-            'result' => 'SUCCESS',
+            'resource_id'   => $submission->id,
+            'result'        => 'SUCCESS',
         ]);
 
         return $submission;

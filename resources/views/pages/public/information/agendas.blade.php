@@ -16,7 +16,7 @@
 </section>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-    <!-- Agenda Terdekat -->
+    <!-- Agenda Terdekat & Mendatang -->
     <div class="space-y-6">
         <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
             <span>🚀 Agenda Terdekat & Mendatang</span>
@@ -24,18 +24,76 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @forelse ($upcomingAgendas as $agenda)
-                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex items-start space-x-5">
-                    <div class="w-16 h-16 rounded-xl bg-blue-600 text-white flex flex-col items-center justify-center flex-shrink-0 font-bold">
-                        <span class="text-lg leading-none">{{ \Carbon\Carbon::parse($agenda->start_at)->format('d') }}</span>
-                        <span class="text-[10px] uppercase tracking-wider mt-1">{{ \Carbon\Carbon::parse($agenda->start_at)->format('M Y') }}</span>
+                @php
+                    // Pakai locale Indonesia untuk Carbon
+                    $startDate = \Carbon\Carbon::parse($agenda->start_at)->locale('id');
+                    $endDate   = $agenda->end_at ? \Carbon\Carbon::parse($agenda->end_at)->locale('id') : null;
+                @endphp
+
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition flex items-start space-x-5">
+                    <!-- Date Box (Warna Biru) -->
+                    <div class="w-16 h-16 rounded-xl bg-blue-600 text-white flex flex-col items-center justify-center flex-shrink-0 font-bold shadow-md shadow-blue-500/20">
+                        <span class="text-xl leading-none font-black">{{ $startDate->translatedFormat('d') }}</span>
+                        <span class="text-[10px] uppercase tracking-wider mt-1">{{ $startDate->translatedFormat('M Y') }}</span>
                     </div>
-                    <div class="space-y-1.5 flex-grow">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 uppercase">{{ $agenda->category ?? 'KEGIATAN' }}</span>
-                        <h3 class="text-base font-bold text-slate-900">{{ $agenda->title }}</h3>
-                        <p class="text-xs text-slate-500">📍 {{ $agenda->location ?? 'Ruang Kelas XI PPLG 2' }}</p>
-                        <p class="text-xs font-semibold text-blue-600">
-                            🕐 {{ \Carbon\Carbon::parse($agenda->start_at)->format('H:i') }} - {{ \Carbon\Carbon::parse($agenda->end_at)->format('H:i WIB') }}
-                        </p>
+
+                    <!-- Detail Info Agenda -->
+                    <div class="space-y-2 flex-grow">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 uppercase">
+                                {{ $agenda->category ?? 'KEGIATAN' }}
+                            </span>
+                            
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700">
+                                {{ $agenda->status ?? 'UPCOMING' }}
+                            </span>
+                        </div>
+
+                        <!-- Judul & Deskripsi -->
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 leading-snug">{{ $agenda->title }}</h3>
+                            @if(!empty($agenda->description))
+                                <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ $agenda->description }}</p>
+                            @endif
+                        </div>
+
+                        <!-- Informasi Tanggal & Jam Bahasa Indonesia -->
+                        <div class="pt-2 border-t border-slate-100 space-y-1.5 text-xs text-slate-600">
+                            <!-- Tanggal Mulai s/d Selesai -->
+                            <div class="flex items-start space-x-1.5 font-medium">
+                                <span class="text-blue-600">📅</span>
+                                <div>
+                                    @if($endDate && $startDate->format('Y-m-d') !== $endDate->format('Y-m-d'))
+                                        {{-- Jika Berlangsung Beberapa Hari --}}
+                                        <span>{{ $startDate->translatedFormat('l, d M Y') }}</span>
+                                        <span class="text-slate-400 font-bold">s/d</span>
+                                        <span>{{ $endDate->translatedFormat('l, d M Y') }}</span>
+                                    @else
+                                        {{-- Jika Hanya 1 Hari --}}
+                                        <span>{{ $startDate->translatedFormat('l, d F Y') }}</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Jam Mulai - Selesai -->
+                            <div class="flex items-center space-x-1.5 font-medium">
+                                <span class="text-amber-500">🕒</span>
+                                <span>
+                                    Jam {{ $startDate->format('H:i') }}
+                                    @if($endDate)
+                                        s/d {{ $endDate->format('H:i') }} WIB
+                                    @else
+                                        WIB - Selesai
+                                    @endif
+                                </span>
+                            </div>
+
+                            <!-- Lokasi -->
+                            <div class="flex items-center space-x-1.5 font-medium text-slate-500">
+                                <span class="text-rose-500">📍</span>
+                                <span>{{ $agenda->location ?? 'Ruang Kelas XI PPLG 2' }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             @empty
@@ -46,19 +104,27 @@
         </div>
     </div>
 
-    <!-- Riwayat Agenda -->
-    @if ($pastAgendas->isNotEmpty())
+    <!-- Riwayat Agenda Selesai -->
+    @if (isset($pastAgendas) && $pastAgendas->isNotEmpty())
         <div class="space-y-4 pt-6 border-t border-slate-200">
             <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Riwayat Kegiatan Selesai</h3>
             <div class="space-y-3">
                 @foreach ($pastAgendas as $past)
+                    @php
+                        $pastStart = \Carbon\Carbon::parse($past->start_at)->locale('id');
+                    @endphp
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
-                        <div>
+                        <div class="space-y-0.5">
                             <span class="font-bold text-slate-800">{{ $past->title }}</span>
-                            <span class="text-slate-400 mx-2">•</span>
-                            <span class="text-slate-500">📍 {{ $past->location ?? 'Lab Komputer' }}</span>
+                            <div class="text-slate-500 text-[11px] flex items-center space-x-2">
+                                <span>📍 {{ $past->location ?? 'Lab Komputer' }}</span>
+                                <span>•</span>
+                                <span>🕒 {{ $pastStart->format('H:i') }} WIB</span>
+                            </div>
                         </div>
-                        <span class="text-slate-400 font-medium">{{ \Carbon\Carbon::parse($past->start_at)->format('d M Y') }}</span>
+                        <span class="text-slate-500 font-semibold bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                            {{ $pastStart->translatedFormat('d M Y') }}
+                        </span>
                     </div>
                 @endforeach
             </div>

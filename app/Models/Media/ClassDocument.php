@@ -9,6 +9,7 @@ use App\Models\Core\User;
 
 class ClassDocument extends Model
 {
+    protected $table = 'class_documents';
     protected $guarded = ['id'];
 
     public function schoolClass(): BelongsTo
@@ -24,5 +25,10 @@ class ClassDocument extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function uploader(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'uploaded_by');
     }
 }
