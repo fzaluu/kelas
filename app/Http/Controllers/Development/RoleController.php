@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class RoleController extends Controller
 {
     /**
-     * Tampilkan daftar role beserta matriks permission-nya.
+     * Tampilkan daftar role beserta jumlah permission & penggunanya.
      */
     public function index()
     {
@@ -28,7 +28,7 @@ class RoleController extends Controller
     {
         $role = Role::with('permissions')->findOrFail($id);
         
-        // Kelompokkan permission berdasarkan resource (misal: attendance, task, finance)
+        // Kelompokkan permission berdasarkan resource
         $permissions = Permission::all()->groupBy('resource');
         
         // Ambil ID permission yang sedang dimiliki role ini
@@ -56,7 +56,6 @@ class RoleController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $role) {
-            // Sinkronisasi permission ke pivot table role_permissions
             $syncData = [];
             if ($request->has('permissions')) {
                 foreach ($request->permissions as $permId) {

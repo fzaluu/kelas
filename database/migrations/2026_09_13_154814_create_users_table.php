@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->nullable()->constrained('members')->onDelete('restrict');
+            $table->foreignId('member_id')->nullable()->constrained('members')->onDelete('set null');
             $table->string('username')->unique();
-            $table->string('email')->unique();
+            $table->string('email')->nullable()->unique();
             $table->string('password');
             $table->enum('status', ['ACTIVE', 'INACTIVE', 'SUSPENDED'])->default('ACTIVE');
             $table->timestamp('last_login_at')->nullable();

@@ -8,43 +8,50 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $guarded = ['id'];
+    protected $table = 'users';
+
+    protected $fillable = [
+        'member_id',
+        'username',
+        'email',
+        'password',
+        'status',
+        'last_login_at',
+    ];
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
             'last_login_at' => 'datetime',
+            'password' => 'hashed',
         ];
     }
 
     /**
-     * Relasi 1-to-1 ke Biodata Anggota Kelas
+     * Single Source of Truth Identitas Anggota Kelas
      */
-    public function classMember(): HasOne
-    {
-        return $this->hasOne(ClassMember::class, 'user_id');
-    }
-
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class, 'member_id');
     }
 
+    /**
+     * Relasi ke Roles (RBAC)
+     */
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id')
-                    ->withPivot('assigned_at', 'expires_at', 'assigned_by')
+                    ->withPivot(['assigned_at', 'expires_at', 'assigned_by'])
                     ->withTimestamps();
     }
 
@@ -66,5 +73,13 @@ class User extends Authenticatable
             }
         }
         return false;
+    }
+
+    /**
+     * Helper Display Name untuk UI (Gunakan nama Member jika ada, atau Username)
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->member?->name ?? $this->username;
     }
 }

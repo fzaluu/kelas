@@ -29,25 +29,29 @@ class AboutController extends Controller
         $ClassPositionModel = $this->getModelClass('ClassPosition', 'Core');
         $MemberModel        = $this->getModelClass('Member', 'Core');
 
-        // 1. Read Profil & Identitas Kelas
+        // 1. Profil & Identitas Kelas
         $profile = $ClassProfileModel ? $ClassProfileModel::where('class_id', $classId)->first() : null;
 
-        // 2. Read Struktur Pengurus (Diurutkan berdasarkan ID)
+        // 2. Read Struktur Pengurus Kelas
         $positions = collect();
         if ($ClassPositionModel) {
             $positions = $ClassPositionModel::where('class_id', $classId)
                 ->with('member')
-                ->orderBy('id', 'asc')
                 ->get();
         }
 
-        // 3. Read Daftar Anggota Aktif
+        // 3. Read Daftar Anggota Siswa (Support fleksibel nama kolom status)
         $members = collect();
         if ($MemberModel) {
-            $members = $MemberModel::where('class_id', $classId)
-                ->where('member_status', 'ACTIVE')
-                ->orderBy('name', 'asc')
-                ->get();
+            $query = $MemberModel::where('class_id', $classId);
+
+            if (\Illuminate\Support\Facades\Schema::hasColumn('members', 'member_status')) {
+                $query->where('member_status', 'ACTIVE');
+            } elseif (\Illuminate\Support\Facades\Schema::hasColumn('members', 'status')) {
+                $query->where('status', 'ACTIVE');
+            }
+
+            $members = $query->orderBy('name', 'asc')->get();
         }
 
         return view('pages.public.about', compact('profile', 'positions', 'members'));

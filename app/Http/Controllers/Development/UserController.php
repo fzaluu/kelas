@@ -4,102 +4,104 @@ namespace App\Http\Controllers\Development;
 
 use App\Http\Controllers\Controller;
 use App\Models\Core\User;
+use App\Models\Core\Member;
 use App\Models\Core\Role;
 use App\Http\Requests\Development\UserStoreRequest;
 use App\Http\Requests\Development\UserUpdateRequest;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    /**
-     * Tampilkan daftar seluruh pengguna.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->latest()->paginate(10);
+        $query = User::with(['member', 'roles'])->latest();
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('username', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('member', function ($mq) use ($request) {
+                      $mq->where('name', 'like', '%' . $request->search . '%');
+                  });
+            });
+        }
+
+        $users = $query->paginate(15)->withQueryString();
+
         return view('pages.development.users.index', compact('users'));
     }
 
-    /**
-     * Form tambah user baru.
-     */
     public function create()
     {
-        $roles = Role::orderBy('id', 'asc')->get();
-        return view('pages.development.users.create', compact('roles'));
+        $roles = Role::all();
+        // Mengambil siswa/member yang belum terikat dengan akun user mana pun
+        $unlinkedMembers = Member::whereDoesntHave('user')->orderBy('name', 'asc')->get();
+
+        return view('pages.development.users.create', compact('roles', 'unlinkedMembers'));
     }
 
-    /**
-     * Simpan user baru ke database.
-     */
     public function store(UserStoreRequest $request)
     {
         DB::transaction(function () use ($request) {
             $user = User::create([
-                'username' => $request->username,
-                'name'     => $request->name,
-                'email'    => $request->email,
-                'password' => Hash::make($request->password),
-                'status'   => 'ACTIVE',
+                'member_id' => $request->member_id,
+                'username'  => $request->username,
+                'email'     => $request->email,
+                'password'  => $request->password,
+                'status'    => $request->status ?? 'ACTIVE',
             ]);
 
             $user->roles()->attach($request->role_id, [
                 'assigned_at' => now(),
+                'assigned_by' => auth()->id(),
             ]);
         });
 
         return redirect()->route('development.users.index')
-            ->with('success', 'User baru berhasil ditambahkan!');
+            ->with('success', 'Pengguna berhasil dibuat dan terhubung dengan role!');
     }
 
-    /**
-     * Form Edit User.
-     */
-    public function edit($id)
+    public function edit(User $user)
     {
-        $user = User::with('roles')->findOrFail($id);
-        $roles = Role::orderBy('id', 'asc')->get();
-        return view('pages.development.users.edit', compact('user', 'roles'));
+        $roles = Role::all();
+        $user->load(['roles', 'member']);
+        
+        $unlinkedMembers = Member::whereDoesntHave('user')
+            ->orWhere('id', $user->member_id)
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return view('pages.development.users.edit', compact('user', 'roles', 'unlinkedMembers'));
     }
 
-    /**
-     * Update data user di database.
-     */
-    public function update(UserUpdateRequest $request, $id)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        $user = User::findOrFail($id);
-
         DB::transaction(function () use ($request, $user) {
             $data = [
-                'username' => $request->username,
-                'name'     => $request->name,
-                'email'    => $request->email,
+                'member_id' => $request->member_id,
+                'username'  => $request->username,
+                'email'     => $request->email,
+                'status'    => $request->status,
             ];
 
-            // Update password hanya jika diisi
             if ($request->filled('password')) {
-                $data['password'] = Hash::make($request->password);
+                $data['password'] = $request->password;
             }
 
             $user->update($data);
-
-            // Sync role baru di pivot table
-            $user->roles()->sync([$request->role_id => ['assigned_at' => now()]]);
+            $user->roles()->sync([$request->role_id => [
+                'assigned_at' => now(),
+                'assigned_by' => auth()->id(),
+            ]]);
         });
 
         return redirect()->route('development.users.index')
-            ->with('success', 'Data user berhasil diperbarui!');
+            ->with('success', 'Data pengguna berhasil diperbarui!');
     }
 
-    /**
-     * Hapus user dari database.
-     */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        $user = User::findOrFail($id);
-
-        // Proteksi agar akun master dev tidak terhapus
         if ($user->username === 'dev') {
             return redirect()->back()->with('error', 'Akun Master Developer tidak dapat dihapus!');
         }
@@ -110,6 +112,6 @@ class UserController extends Controller
         });
 
         return redirect()->route('development.users.index')
-            ->with('success', 'User berhasil dihapus!');
+            ->with('success', 'Pengguna berhasil dihapus!');
     }
 }

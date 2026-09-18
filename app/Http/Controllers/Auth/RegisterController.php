@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Core\User;
-use App\Models\Core\ClassMember;
+use App\Models\Core\Role;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
@@ -19,37 +18,31 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'nis'       => ['required', 'string', 'max:20', 'unique:class_members,nis'],
-            'full_name' => ['required', 'string', 'max:100'],
-            'gender'    => ['required', 'in:L,P'],
-            'username'  => ['required', 'string', 'max:50', 'unique:users,username'],
-            'email'     => ['required', 'email', 'unique:users,email'],
-            'password'  => ['required', 'string', 'min:6', 'confirmed'],
+            'nis'       => ['required', 'string', 'max:20'],
+            'full_name' => ['required', 'string', 'max:255'],
+            'username'  => ['required', 'string', 'max:255', 'unique:users,username'],
+            'email'     => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password'  => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         DB::transaction(function () use ($request) {
-            // 1. Buat User Account dengan Status PENDING
+            $studentRole = Role::where('name', 'student')->first();
+
             $user = User::create([
-                'name'            => $request->full_name,
                 'username'        => $request->username,
                 'email'           => $request->email,
-                'password'        => Hash::make($request->password),
-                'role'            => 'siswa',
-                'status'          => 'ACTIVE',
-                'approval_status' => 'PENDING', // 👈 Butuh persetujuan Dev
+                'password'        => $request->password,
+                'status'          => 'INACTIVE', // Belum aktif sampai diapprove
+                'approval_status' => 'PENDING',
             ]);
 
-            // 2. Buat Draf Biodata Siswa
-            ClassMember::create([
-                'user_id'   => $user->id,
-                'nis'       => $request->nis,
-                'full_name' => $request->full_name,
-                'gender'    => $request->gender,
-                'status'    => 'ACTIVE',
-            ]);
+            if ($studentRole) {
+                $user->roles()->attach($studentRole->id, [
+                    'assigned_at' => now(),
+                ]);
+            }
         });
 
-        return redirect()->route('login')
-            ->with('success', '🎉 Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan dari Developer.');
+        return redirect()->route('login')->with('success', 'Pendaftaran berhasil dikirim! Akun Anda sedang menunggu persetujuan pengurus/admin.');
     }
 }

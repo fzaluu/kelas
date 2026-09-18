@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Content\Gallery;
+use Illuminate\Http\Request;
 
 class GalleryController extends Controller
 {
@@ -21,57 +23,73 @@ class GalleryController extends Controller
         return null;
     }
 
-    // 📸 1. Kegiatan Kelas (Album Foto)
+    // 📸 1. Galeri Kegiatan
     public function activities()
     {
         $classId = 1;
-        $GalleryModel = $this->getModelClass('Gallery', 'Content');
 
-        $albums = collect();
-        if ($GalleryModel) {
-            $albums = $GalleryModel::where('class_id', $classId)
-                ->where('status', 'PUBLISHED')
-                ->where('visibility', 'PUBLIC')
-                ->with(['items.mediaFile'])
-                ->orderBy('published_at', 'desc')
-                ->paginate(6);
-        }
+        $galleries = Gallery::where('class_id', $classId)
+            ->where('status', 'PUBLISHED')
+            ->where('category', 'ACTIVITY')
+            ->with(['mediaFile', 'creator'])
+            ->latest('published_at')
+            ->paginate(12);
 
-        return view('pages.public.gallery.activities', compact('albums'));
+        return view('pages.public.gallery.activities', compact('galleries'));
     }
 
-    // 💻 2. Karya & Project Showcase
+    // 🚀 2. Karya & Project Showcase
     public function projects()
     {
         $classId = 1;
         $ProjectModel = $this->getModelClass('Project', 'Content');
 
         $projects = collect();
+
         if ($ProjectModel) {
             $projects = $ProjectModel::where('class_id', $classId)
                 ->where('status', 'PUBLISHED')
-                ->where('visibility', 'PUBLIC')
                 ->with(['members.member'])
-                ->orderBy('created_at', 'desc')
+                ->latest()
+                ->get();
+        }
+
+        // Fallback jika belum mengisi tabel projects khusus, ambil dari Galeri berkategori PROJECT
+        if ($projects->isEmpty()) {
+            $projects = Gallery::where('class_id', $classId)
+                ->where('status', 'PUBLISHED')
+                ->where('category', 'PROJECT')
+                ->with(['mediaFile'])
+                ->latest()
                 ->get();
         }
 
         return view('pages.public.gallery.projects', compact('projects'));
     }
 
-    // 🏆 3. Prestasi Siswa
+    // 🏆 3. Prestasi & Apresiasi
     public function appreciations()
     {
         $classId = 1;
         $AppreciationModel = $this->getModelClass('Appreciation', 'Content');
 
         $appreciations = collect();
+
         if ($AppreciationModel) {
             $appreciations = $AppreciationModel::where('class_id', $classId)
                 ->where('status', 'PUBLISHED')
-                ->where('visibility', 'PUBLIC')
                 ->with(['members.member'])
-                ->orderBy('achievement_date', 'desc')
+                ->latest('achievement_date')
+                ->get();
+        }
+
+        // Fallback jika belum mengisi tabel appreciations khusus, ambil dari Galeri berkategori APPRECIATION
+        if ($appreciations->isEmpty()) {
+            $appreciations = Gallery::where('class_id', $classId)
+                ->where('status', 'PUBLISHED')
+                ->where('category', 'APPRECIATION')
+                ->with(['mediaFile'])
+                ->latest()
                 ->get();
         }
 

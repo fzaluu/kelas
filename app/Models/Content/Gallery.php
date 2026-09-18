@@ -2,6 +2,7 @@
 
 namespace App\Models\Content;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,14 +11,25 @@ use App\Models\Core\User;
 
 class Gallery extends Model
 {
-    protected $guarded = ['id'];
+    use HasFactory;
 
-    protected function casts(): array
-    {
-        return [
-            'published_at' => 'datetime',
-        ];
-    }
+    protected $table = 'galleries';
+
+    protected $fillable = [
+        'class_id',
+        'title',
+        'description',
+        'category',
+        'status',
+        'visibility',
+        'published_at',
+        'created_by',
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
 
     public function schoolClass(): BelongsTo
     {
@@ -29,8 +41,11 @@ class Gallery extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function items(): HasMany
+    /**
+     * Relasi Album (1 Album Gallery menampung banyak Media)
+     */
+    public function galleryMedia(): HasMany
     {
-        return $this->hasMany(GalleryMedia::class, 'gallery_id');
+        return $this->hasMany(GalleryMedia::class, 'gallery_id')->orderBy('sort_order', 'asc');
     }
 }

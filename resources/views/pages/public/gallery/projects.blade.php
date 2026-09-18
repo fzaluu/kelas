@@ -24,13 +24,19 @@
                         <span class="px-3 py-1 rounded-lg text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 uppercase">
                             {{ $project->category ?? 'SOFTWARE PROJECT' }}
                         </span>
-                        @if($project->repository_url)
+                        @if(isset($project->repository_url) && $project->repository_url)
                             <a href="{{ $project->repository_url }}" target="_blank" rel="noopener" class="text-xs text-slate-400 hover:text-slate-800 font-bold flex items-center space-x-1">
                                 <span>GitHub Repository</span>
                                 <span>↗</span>
                             </a>
                         @endif
                     </div>
+
+                    @if(optional($project->mediaFile)->file_path)
+                        <div class="h-44 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
+                            <img src="{{ asset('storage/' . $project->mediaFile->file_path) }}" alt="{{ $project->title }}" class="w-full h-full object-cover">
+                        </div>
+                    @endif
 
                     <h3 class="text-xl font-bold text-slate-900 leading-tight">{{ $project->title }}</h3>
                     <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -42,16 +48,18 @@
                 <div class="pt-4 border-t border-slate-100 space-y-3">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tim Pengembang:</span>
                     <div class="flex flex-wrap gap-2">
-                        @forelse ($project->members as $pm)
-                            <span class="px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700">
-                                👤 {{ $pm->member->name ?? 'Siswa' }}
-                                @if($pm->contribution)
-                                    <span class="text-slate-400 text-[10px]">({{ $pm->contribution }})</span>
-                                @endif
-                            </span>
-                        @empty
-                            <span class="text-xs text-slate-400 italic">Tim XI PPLG 2</span>
-                        @endforelse
+                        @if(isset($project->members) && count($project->members) > 0)
+                            @foreach ($project->members as $pm)
+                                <span class="px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700">
+                                    👤 {{ $pm->member->name ?? 'Siswa' }}
+                                    @if(isset($pm->contribution) && $pm->contribution)
+                                        <span class="text-slate-400 text-[10px]">({{ $pm->contribution }})</span>
+                                    @endif
+                                </span>
+                            @endforeach
+                        @else
+                            <span class="text-xs text-slate-500 font-medium bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200">Siswa XI PPLG 2</span>
+                        @endif
                     </div>
                 </div>
             </div>

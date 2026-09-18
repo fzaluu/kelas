@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Academic\Schedule;
+use App\Models\Academic\Piket;
 
 class InformationController extends Controller
 {
@@ -21,7 +23,7 @@ class InformationController extends Controller
         return null;
     }
 
-    // 📢 1. Pengumuman
+    // 1. Pengumuman
     public function announcements()
     {
         $classId = 1;
@@ -38,7 +40,7 @@ class InformationController extends Controller
         return view('pages.public.information.announcements', compact('announcements'));
     }
 
-    // 📅 2. Agenda
+    // 2. Agenda
     public function agendas()
     {
         $classId = 1;
@@ -65,7 +67,7 @@ class InformationController extends Controller
         return view('pages.public.information.agendas', compact('upcomingAgendas', 'pastAgendas'));
     }
 
-    // 📚 3. Tugas Publik
+    // 3. Tugas Publik
     public function tasks()
     {
         $classId = 1;
@@ -79,7 +81,7 @@ class InformationController extends Controller
                 ->where('status', 'PUBLISHED')
                 ->where($deadlineColumn, '>=', now())
                 ->with('subject')
-                ->withCount('submissions') // Menghitung otomatis jumlah pengumpulan siswa
+                ->withCount('submissions')
                 ->orderBy($deadlineColumn, 'asc')
                 ->get();
         }
@@ -87,20 +89,22 @@ class InformationController extends Controller
         return view('pages.public.information.tasks', compact('activeTasks'));
     }
 
-    // 🗓️ 4. Jadwal (Pelajaran + Piket Unified)
+    // 4. Jadwal (Pelajaran + Piket Dinamis)
     public function schedules()
     {
         $classId = 1;
-        $ScheduleModel = $this->getModelClass('LessonSchedule', 'Academic');
 
-        $schedules = collect();
-        if ($ScheduleModel) {
-            $schedules = $ScheduleModel::where('class_id', $classId)
-                ->with(['subject', 'teacher'])
-                ->get()
-                ->groupBy('day_of_week');
-        }
+        // Ambil Jadwal Pelajaran
+        $schedules = Schedule::where('class_id', $classId)
+            ->orderBy('start_time')
+            ->get()
+            ->groupBy('day');
 
-        return view('pages.public.information.schedules', compact('schedules'));
+        // Ambil Jadwal Piket Kebersihan
+        $pikets = Piket::where('class_id', $classId)
+            ->get()
+            ->groupBy('day');
+
+        return view('pages.public.information.schedules', compact('schedules', 'pikets'));
     }
 }

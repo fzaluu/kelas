@@ -15,7 +15,7 @@
         
         <div class="flex justify-between items-center">
             <a href="{{ route('login') }}" class="text-xs font-semibold text-slate-400 hover:text-blue-600 transition flex items-center space-x-1">
-                <span>← Kembali ke Login</span>
+                <span>Kembali ke Login</span>
             </a>
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 uppercase border border-blue-100">
                 SMKN 4 Tasikmalaya
@@ -24,7 +24,7 @@
 
         <div class="text-center space-y-1.5">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-blue-500/20">
-                🔑
+                P2
             </div>
             <div>
                 <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Lupa Kata Sandi</h1>
@@ -33,16 +33,14 @@
         </div>
 
         @if(session('error'))
-            <div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start space-x-2">
-                <span class="shrink-0 text-sm">⚠️</span>
-                <span class="text-[11px] font-medium leading-relaxed">{{ session('error') }}</span>
+            <div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium leading-relaxed">
+                {{ session('error') }}
             </div>
         @endif
 
         <form action="{{ route('password.email') }}" method="POST" class="space-y-4">
             @csrf
 
-            <!-- 1. Email / Username -->
             <div class="space-y-1">
                 <label for="identity" class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                     EMAIL / USERNAME *
@@ -58,9 +56,7 @@
                 @error('identity') <p class="text-[10px] text-rose-500 font-semibold mt-1">{{ $message }}</p> @enderror
             </div>
 
-            <!-- 2. Dynamic Input: NISN vs KODE DEV -->
-            @if($useDevCode)
-                <!-- Mode Kode Dev (Jika NISN Salah 5x) -->
+            @if(isset($useDevCode) && $useDevCode)
                 <div class="space-y-1">
                     <label for="dev_code" class="block text-[11px] font-bold text-amber-600 uppercase tracking-wider flex items-center justify-between">
                         <span>KODE DEV *</span>
@@ -75,7 +71,6 @@
                     @error('dev_code') <p class="text-[10px] text-rose-500 font-semibold mt-1">{{ $message }}</p> @enderror
                 </div>
             @else
-                <!-- Mode NISN Standard -->
                 <div class="space-y-1">
                     <label for="nisn" class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                         NISN SISWA *
@@ -92,7 +87,7 @@
             @endif
 
             <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-600/20 transition hover:scale-[1.01] active:scale-[0.99]">
-                VERIFIKASI AKUN →
+                VERIFIKASI AKUN
             </button>
         </form>
 

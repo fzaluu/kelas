@@ -99,7 +99,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Pengumuman items -->
             @forelse ($announcements as $ann)
                 <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-3">
                     <div class="flex justify-between items-center">
@@ -128,12 +127,15 @@
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             @forelse ($galleries as $gal)
-                <div class="group relative h-48 rounded-2xl bg-slate-200 overflow-hidden border border-slate-200 shadow-sm">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent z-10"></div>
+                <div class="group relative h-48 rounded-2xl bg-slate-900 overflow-hidden border border-slate-200 shadow-sm">
+                    @if(optional($gal->mediaFile)->url)
+                        <img src="{{ $gal->mediaFile->url }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    @endif
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent z-10"></div>
                     <div class="absolute bottom-3 left-3 right-3 z-20">
                         <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">{{ $gal->category }}</span>
                         <h4 class="text-xs font-bold text-white truncate">{{ $gal->title }}</h4>
-                        <p class="text-[10px] text-slate-300">{{ $gal->items->count() }} Foto dalam album</p>
+                        <p class="text-[10px] text-slate-300">Dokumentasi XI PPLG 2</p>
                     </div>
                 </div>
             @empty
@@ -156,7 +158,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            @forelse ($featuredProjects as $proj)
+            @forelse ($projects ?? $featuredProjects ?? [] as $proj)
                 <div class="bg-slate-50 rounded-3xl p-6 border border-slate-200 flex flex-col justify-between space-y-4">
                     <div>
                         <span class="px-3 py-1 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase mb-3 inline-block">Project Showcase</span>
@@ -164,7 +166,7 @@
                         <p class="text-xs text-slate-600 leading-relaxed line-clamp-3">{{ $proj->description }}</p>
                     </div>
                     <div class="pt-4 border-t border-slate-200 text-xs font-medium text-slate-500 flex justify-between items-center">
-                        <span>Tim: {{ $proj->members->count() }} Anggota</span>
+                        <span>Tim: {{ optional($proj->members)->count() ?? 1 }} Anggota</span>
                         <a href="#" class="text-blue-600 font-bold hover:underline">Detail Project →</a>
                     </div>
                 </div>
@@ -231,7 +233,5 @@
         </div>
     </div>
 </section>
-
-
 
 @endsection

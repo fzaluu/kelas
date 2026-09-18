@@ -17,50 +17,50 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse ($albums as $album)
+        @forelse ($galleries as $item)
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition group">
                 <div class="h-48 bg-slate-100 relative overflow-hidden flex items-center justify-center">
-                    @if($album->items->first() && $album->items->first()->mediaFile)
-                        <img src="{{ asset('storage/' . $album->items->first()->mediaFile->file_path) }}" 
-                             alt="{{ $album->title }}" 
+                    @if(optional($item->mediaFile)->file_path)
+                        <img src="{{ asset('storage/' . $item->mediaFile->file_path) }}" 
+                             alt="{{ $item->title }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                     @else
                         <div class="text-center text-slate-400">
                             <span class="text-3xl block mb-1">📷</span>
-                            <span class="text-[11px] font-medium">Foto Album</span>
+                            <span class="text-[11px] font-medium">Tidak ada foto</span>
                         </div>
                     @endif
-                    <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-[10px] font-bold">
-                        {{ $album->items->count() }} Foto
+                    <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase">
+                        {{ $item->category ?? 'ACTIVITY' }}
                     </span>
                 </div>
                 
                 <div class="p-5 space-y-2">
                     <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">
-                        {{ $album->category ?? 'DOKUMENTASI' }}
+                        {{ $item->category ?? 'DOKUMENTASI' }}
                     </span>
                     <h3 class="font-bold text-slate-900 text-base group-hover:text-blue-600 transition truncate">
-                        {{ $album->title }}
+                        {{ $item->title }}
                     </h3>
                     <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                        {{ $album->description ?? 'Dokumentasi resmi kegiatan siswa XI PPLG 2.' }}
+                        {{ $item->description ?? 'Dokumentasi resmi kegiatan siswa XI PPLG 2.' }}
                     </p>
                     <div class="pt-3 border-t border-slate-100 flex justify-between items-center text-[11px] text-slate-400">
-                        <span>{{ \Carbon\Carbon::parse($album->published_at)->format('d M Y') }}</span>
-                        <span class="font-bold text-blue-600 group-hover:underline">Lihat Album →</span>
+                        <span>{{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('d M Y') : '-' }}</span>
+                        <span class="font-bold text-blue-600">Terbit</span>
                     </div>
                 </div>
             </div>
         @empty
             <div class="col-span-3 text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
-                <p class="text-xs text-slate-400">Belum ada album foto kegiatan yang dipublikasikan.</p>
+                <p class="text-xs text-slate-400">Belum ada foto kegiatan yang dipublikasikan.</p>
             </div>
         @endforelse
     </div>
 
-    @if (method_exists($albums, 'hasPages') && $albums->hasPages())
+    @if (method_exists($galleries, 'hasPages') && $galleries->hasPages())
         <div class="mt-8">
-            {{ $albums->links() }}
+            {{ $galleries->links() }}
         </div>
     @endif
 </div>

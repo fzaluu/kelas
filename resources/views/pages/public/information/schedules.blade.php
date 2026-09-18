@@ -19,56 +19,66 @@
         <button @click="activeTab = 'lessons'" 
                 :class="activeTab === 'lessons' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
                 class="px-5 py-2.5 rounded-xl text-xs font-bold transition">
-            📚 Jadwal Pelajaran Mingguan
+            Jadwal Pelajaran Mingguan
         </button>
         <button @click="activeTab = 'piket'" 
                 :class="activeTab === 'piket' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
                 class="px-5 py-2.5 rounded-xl text-xs font-bold transition">
-            🧹 Jadwal Piket Kebersihan
+            Jadwal Piket Kebersihan
         </button>
     </div>
 
+    @php
+        $days = ['SENIN' => 'Senin', 'SELASA' => 'Selasa', 'RABU' => 'Rabu', 'KAMIS' => 'Kamis', 'JUMAT' => 'Jumat'];
+    @endphp
+
     <!-- TAB 1: JADWAL PELAJARAN -->
     <div x-show="activeTab === 'lessons'" class="grid grid-cols-1 md:grid-cols-5 gap-6">
-        @php
-            $days = ['Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat'];
-        @endphp
-
-        @foreach ($days as $englishDay => $indonesianDay)
+        @foreach ($days as $enumDay => $indonesianDay)
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
-                <div class="bg-slate-900 text-white py-3 px-4 text-center font-bold text-sm">
-                    {{ $indonesianDay }}
-                </div>
-                <div class="p-4 space-y-3 flex-grow">
-                    @forelse ($schedules->get($englishDay, []) as $item)
-                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
-                            <span class="text-[10px] font-bold text-blue-600 block">{{ $item->start_time }} - {{ $item->end_time }}</span>
-                            <h4 class="font-bold text-xs text-slate-900">{{ $item->subject->name ?? 'Mata Pelajaran' }}</h4>
-                            <p class="text-[10px] text-slate-400">Guru: {{ $item->teacher->name ?? 'Pengampu' }}</p>
-                        </div>
-                    @empty
-                        <div class="text-center py-6 text-[11px] text-slate-400 italic">
-                            Tidak ada jadwal.
-                        </div>
-                    @endforelse
+                <div>
+                    <div class="bg-slate-900 text-white py-3 px-4 text-center font-bold text-sm uppercase">
+                        {{ $indonesianDay }}
+                    </div>
+                    <div class="p-4 space-y-3">
+                        @forelse ($schedules->get($enumDay, []) as $item)
+                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+                                <span class="text-[10px] font-bold text-blue-600 font-mono block">{{ $item->start_time }} - {{ $item->end_time }}</span>
+                                <h4 class="font-bold text-xs text-slate-900">{{ $item->subject_name }}</h4>
+                                <p class="text-[10px] text-slate-500 truncate">{{ $item->teacher_name ?? 'Pengajar -' }} | {{ $item->room }}</p>
+                            </div>
+                        @empty
+                            <div class="text-center py-6 text-[11px] text-slate-400 italic">
+                                Tidak ada jadwal.
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         @endforeach
     </div>
 
     <!-- TAB 2: JADWAL PIKET KEBERSIHAN -->
-    <div x-show="activeTab === 'piket'" class="grid grid-cols-1 md:grid-cols-5 gap-6" style="display: none;">
-        @foreach (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'] as $day)
+    <div x-show="activeTab === 'piket'" class="grid grid-cols-1 md:grid-cols-5 gap-6" x-cloak>
+        @foreach ($days as $enumDay => $indonesianDay)
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="bg-blue-600 text-white py-3 px-4 text-center font-bold text-sm">
-                    Piket {{ $day }}
+                    Piket {{ $indonesianDay }}
                 </div>
                 <div class="p-4">
                     <ul class="space-y-2 text-xs font-medium text-slate-700">
-                        <li class="p-2 bg-slate-50 rounded-lg border border-slate-100">1. Anggota Regu {{ $day }} A</li>
-                        <li class="p-2 bg-slate-50 rounded-lg border border-slate-100">2. Anggota Regu {{ $day }} B</li>
-                        <li class="p-2 bg-slate-50 rounded-lg border border-slate-100">3. Anggota Regu {{ $day }} C</li>
-                        <li class="p-2 bg-slate-50 rounded-lg border border-slate-100">4. Anggota Regu {{ $day }} D</li>
+                        @forelse ($pikets->get($enumDay, []) as $index => $piketItem)
+                            <li class="p-2 bg-slate-50 rounded-lg border border-slate-100 flex items-center space-x-2">
+                                <span class="w-5 h-5 rounded bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold shrink-0">
+                                    {{ $index + 1 }}
+                                </span>
+                                <span class="truncate font-bold text-slate-800">{{ $piketItem->student_name }}</span>
+                            </li>
+                        @empty
+                            <li class="text-center py-6 text-[11px] text-slate-400 italic">
+                                Belum ada regu piket.
+                            </li>
+                        @endforelse
                     </ul>
                 </div>
             </div>

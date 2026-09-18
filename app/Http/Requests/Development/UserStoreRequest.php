@@ -14,11 +14,12 @@ class UserStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string', 'max:50', 'unique:users,username'],
-            'name'     => ['nullable', 'string', 'max:100'],
-            'email'    => ['nullable', 'email', 'max:100', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8'],
-            'role_id'  => ['required', 'exists:roles,id'],
+            'username'  => ['required', 'string', 'max:255', 'unique:users,username'],
+            'email'     => ['nullable', 'email', 'max:255', 'unique:users,email'],
+            'password'  => ['required', 'string', 'min:8'],
+            'role_id'   => ['required', 'exists:roles,id'],
+            'member_id' => ['nullable', 'exists:members,id', 'unique:users,member_id'],
+            'status'    => ['required', 'in:ACTIVE,INACTIVE,SUSPENDED'],
         ];
     }
 }

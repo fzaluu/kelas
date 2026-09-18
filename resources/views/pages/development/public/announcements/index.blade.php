@@ -8,29 +8,25 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Konten Publik Portal</h1>
-            <p class="text-xs text-slate-500">Kelola pengumuman, agenda, galeri, hingga jadwal pelajaran XI PPLG 2.</p>
+            <p class="text-xs text-slate-500">Kelola pengumuman, agenda, galeri, hingga dokumen XI PPLG 2.</p>
         </div>
 
-        <a href="{{ route('development.public.announcements.create') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shrink-0">
-            + Buat Pengumuman Baru 📢
+        <a href="{{ route('development.public.announcements.create') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shrink-0 self-start sm:self-auto">
+            BUAT PENGUMUMAN BARU
         </a>
     </div>
 
     <!-- Tab Sub-Menu Konten Publik -->
     <div class="flex items-center space-x-2 border-b border-slate-200 overflow-x-auto pb-2">
-        <a href="{{ route('development.public.announcements.index') }}" class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm">📢 Pengumuman</a>
-        <a href="{{ route('development.public.agendas.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">📅 Agenda</a>
-        <a href="{{ route('development.public.documents.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">📄 Dokumentasi</a>
-        <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">🖼️ Galeri Kegiatan</a>
-        <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">🚀 Karya Siswa</a>
-        <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">🏆 Prestasi</a>
-        <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">📚 Jadwal & Tugas</a>
+        <a href="{{ route('development.public.announcements.index') }}" class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm">Pengumuman</a>
+        <a href="{{ route('development.public.agendas.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 transition">Agenda</a>
+        <a href="{{ route('development.public.documents.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 transition">Dokumentasi</a>
+        <a href="{{ route('development.public.galleries.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 transition">Galeri Kegiatan</a>
     </div>
 
     @if(session('success'))
-        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
-            <span>✅</span>
-            <span class="font-semibold">{{ session('success') }}</span>
+        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+            {{ session('success') }}
         </div>
     @endif
 
@@ -53,15 +49,15 @@
                         <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">{{ $item->category }}</span></td>
                         <td class="py-3 px-4">
                             @if($item->priority === 'URGENT')
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700">URGENT</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">URGENT</span>
                             @elseif($item->priority === 'IMPORTANT')
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700">IMPORTANT</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">IMPORTANT</span>
                             @else
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">NORMAL</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">NORMAL</span>
                             @endif
                         </td>
                         <td class="py-3 px-4">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $item->status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">{{ $item->status }}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $item->status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200' }}">{{ $item->status }}</span>
                         </td>
                         <td class="py-3 px-4 text-right">
                             <form action="{{ route('development.public.announcements.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus pengumuman ini?')">

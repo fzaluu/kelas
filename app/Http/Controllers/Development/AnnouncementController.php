@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Development;
 
 use App\Http\Controllers\Controller;
-use App\Models\Content\Announcement; // ✅ Model Content
+use App\Models\Content\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -19,13 +19,11 @@ class AnnouncementController extends Controller
 
         $announcements = $query->paginate(10)->withQueryString();
 
-        // 👈 PERBAIKAN: Tambahkan .public. di path view
         return view('pages.development.public.announcements.index', compact('announcements'));
     }
 
     public function create()
     {
-        // 👈 PERBAIKAN: Tambahkan .public. di path view
         return view('pages.development.public.announcements.create');
     }
 

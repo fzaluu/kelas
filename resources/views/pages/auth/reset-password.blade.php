@@ -15,7 +15,7 @@
         
         <div class="text-center space-y-1.5">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-blue-500/20">
-                🔒
+                P2
             </div>
             <div>
                 <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Buat Kata Sandi Baru</h1>
@@ -24,9 +24,8 @@
         </div>
 
         @if(session('success'))
-            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
-                <span>✅</span>
-                <span class="text-[11px] font-medium leading-tight">{{ session('success') }}</span>
+            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium leading-tight">
+                {{ session('success') }}
             </div>
         @endif
 
@@ -34,7 +33,6 @@
             @csrf
             <input type="hidden" name="token" value="{{ $token }}">
 
-            <!-- Password Baru -->
             <div class="space-y-1">
                 <label for="newPassInput" class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                     KATA SANDI BARU *
@@ -61,7 +59,6 @@
                 @error('password') <p class="text-[10px] text-rose-500 font-semibold mt-1">{{ $message }}</p> @enderror
             </div>
 
-            <!-- Konfirmasi Password -->
             <div class="space-y-1">
                 <label for="confirmPassInput" class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                     KONFIRMASI KATA SANDI *
@@ -88,7 +85,7 @@
             </div>
 
             <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-600/20 transition hover:scale-[1.01] active:scale-[0.99]">
-                SIMPAN PASSWORD BARU →
+                SIMPAN PASSWORD BARU
             </button>
         </form>
 

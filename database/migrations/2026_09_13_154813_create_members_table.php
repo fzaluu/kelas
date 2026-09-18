@@ -10,13 +10,15 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('class_id')->constrained('classes')->onDelete('restrict');
+            $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
+            $table->string('nis', 20)->nullable()->unique();
+            $table->string('nisn', 20)->nullable()->unique();
             $table->string('name');
-            $table->unsignedBigInteger('photo_file_id')->nullable(); // Foreign Key ke media_files (Phase 7)
+            $table->unsignedBigInteger('photo_file_id')->nullable();
             $table->enum('gender', ['L', 'P']);
             $table->text('public_bio')->nullable();
             $table->string('public_status')->nullable();
-            $table->enum('member_status', ['ACTIVE', 'ALUMNI', 'TRANSFERRED', 'INACTIVE'])->default('ACTIVE');
+            $table->enum('member_status', ['ACTIVE', 'INACTIVE', 'GRADUATED', 'TRANSFERRED'])->default('ACTIVE');
             $table->date('joined_at')->nullable();
             $table->date('left_at')->nullable();
             $table->timestamps();

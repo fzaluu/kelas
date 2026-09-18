@@ -32,7 +32,10 @@
             📄 Dokumentasi
         </a>
         
-        <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">🖼️ Galeri Kegiatan</a>
+        <a href="{{ route('development.public.galleries.index') }}" 
+            class="px-4 py-2 rounded-xl text-xs font-bold {{ request()->routeIs('development.public.galleries.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
+                🖼️ Galeri Kegiatan
+        </a>
         <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">🚀 Karya Siswa</a>
         <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">🏆 Prestasi</a>
         <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">📚 Jadwal & Tugas</a>

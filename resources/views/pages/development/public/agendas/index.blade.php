@@ -4,32 +4,29 @@
 
 @section('content')
 <div class="space-y-6">
+    <!-- Header & Navigation Bar Konten Publik -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Konten Agenda Kegiatan</h1>
             <p class="text-xs text-slate-500">Kelola agenda kegiatan, rapat, dan jadwal event XI PPLG 2.</p>
         </div>
 
-        <a href="{{ route('development.public.agendas.create') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shrink-0">
-            + Buat Agenda Baru 📅
+        <a href="{{ route('development.public.agendas.create') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shrink-0 self-start sm:self-auto">
+            BUAT AGENDA BARU
         </a>
     </div>
 
     <!-- Tab Navigation Sub-Menu -->
     <div class="flex items-center space-x-2 border-b border-slate-200 overflow-x-auto pb-2">
-        <a href="{{ route('development.public.announcements.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">📢 Pengumuman</a>
-        <a href="{{ route('development.public.agendas.index') }}" class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm">📅 Agenda</a>
-        <a href="{{ route('development.public.documents.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">📄 Dokumentasi</a>
-        <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">🖼️ Galeri Kegiatan</a>
-        <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">🚀 Karya Siswa</a>
-        <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">🏆 Prestasi</a>
-        <a href="#" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">📚 Jadwal & Tugas</a>
+        <a href="{{ route('development.public.announcements.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 transition">Pengumuman</a>
+        <a href="{{ route('development.public.agendas.index') }}" class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm">Agenda</a>
+        <a href="{{ route('development.public.documents.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 transition">Dokumentasi</a>
+        <a href="{{ route('development.public.galleries.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 transition">Galeri Kegiatan</a>
     </div>
 
     @if(session('success'))
-        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
-            <span>✅</span>
-            <span class="font-semibold">{{ session('success') }}</span>
+        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+            {{ session('success') }}
         </div>
     @endif
 
@@ -49,13 +46,19 @@
                     <tr class="hover:bg-slate-50/50 transition">
                         <td class="py-3 px-4 font-semibold text-slate-900">{{ $item->title }}</td>
                         <td class="py-3 px-4 font-mono text-[11px] text-slate-500">
-                            {{ $item->start_at ? $item->start_at->format('d M Y H:i') : '-' }}
+                            {{ $item->start_at ? \Carbon\Carbon::parse($item->start_at)->format('d M Y H:i') : '-' }}
                         </td>
                         <td class="py-3 px-4 text-slate-600">{{ $item->location ?? '-' }}</td>
                         <td class="py-3 px-4">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $item->status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">
-                                {{ $item->status }}
-                            </span>
+                            @if($item->status === 'PUBLISHED')
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">PUBLISHED</span>
+                            @elseif($item->status === 'COMPLETED')
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">COMPLETED</span>
+                            @elseif($item->status === 'CANCELLED')
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">CANCELLED</span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200">DRAFT</span>
+                            @endif
                         </td>
                         <td class="py-3 px-4 text-right">
                             <form action="{{ route('development.public.agendas.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus agenda ini?')">

@@ -31,16 +31,65 @@ class MediaController extends Controller
 
         $file = $request->file('file');
         $originalName = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $storedName = time() . '_' . Str::random(10) . '.' . $extension;
-        $storagePath = $file->storeAs('uploads/media', $storedName, 'public');
+        $extension = strtolower($file->getClientOriginalExtension());
+        $mimeType = $file->getClientMimeType();
+        
+        $randomName = time() . '_' . Str::random(10);
+        $directory = 'uploads/media';
+
+        // Cek apakah file merupakan gambar yang bisa dikonversi ke WebP
+        $isImage = str_starts_with($mimeType, 'image/') && in_array($extension, ['jpg', 'jpeg', 'png', 'webp']);
+
+        if ($isImage && function_exists('imagewebp')) {
+            $storedName = $randomName . '.webp';
+            $storagePath = $directory . '/' . $storedName;
+            $fullPath = storage_path('app/public/' . $storagePath);
+
+            // Pastikan direktori tujuan tersedia
+            if (!file_exists(dirname($fullPath))) {
+                mkdir(dirname($fullPath), 0755, true);
+            }
+
+            // Konversi gambar menggunakan GD library bawaan PHP
+            $imageResource = match ($extension) {
+                'jpg', 'jpeg' => @imagecreatefromjpeg($file->getRealPath()),
+                'png'        => @imagecreatefrompng($file->getRealPath()),
+                'webp'       => @imagecreatefromwebp($file->getRealPath()),
+                default      => null,
+            };
+
+            if ($imageResource) {
+                // Tangani transparansi jika PNG/WebP
+                imagepalettetotruecolor($imageResource);
+                imagealphablending($imageResource, true);
+                imagesavealpha($imageResource, true);
+
+                // Simpan ke format WebP dengan kualitas 80% (Presisi tinggi, ukuran sangat kecil)
+                imagewebp($imageResource, $fullPath, 80);
+                imagedestroy($imageResource);
+
+                $mimeType = 'image/webp';
+                $extension = 'webp';
+                $fileSize = filesize($fullPath);
+            } else {
+                // Fallback jika pemrosesan gambar gagal
+                $storedName = $randomName . '.' . $extension;
+                $storagePath = $file->storeAs($directory, $storedName, 'public');
+                $fileSize = $file->getSize();
+            }
+        } else {
+            // Jika dokumen non-gambar (PDF, Word, Excel, dll)
+            $storedName = $randomName . '.' . $extension;
+            $storagePath = $file->storeAs($directory, $storedName, 'public');
+            $fileSize = $file->getSize();
+        }
 
         MediaFile::create([
             'original_name' => $originalName,
             'stored_name'   => $storedName,
-            'mime_type'     => $file->getClientMimeType(),
+            'mime_type'     => $mimeType,
             'extension'     => $extension,
-            'size'          => $file->getSize(),
+            'size'          => $fileSize,
             'storage_disk'  => 'public',
             'storage_path'  => $storagePath,
             'visibility'    => 'MEMBER',
@@ -49,7 +98,20 @@ class MediaController extends Controller
         ]);
 
         return redirect()->route('development.media.index')
-            ->with('success', "File {$originalName} berhasil diunggah.");
+            ->with('success', "File {$originalName} berhasil diunggah dan dioptimasi.");
+    }
+
+    public function update(Request $request, MediaFile $medium)
+    {
+        $request->validate([
+            'original_name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $medium->update([
+            'original_name' => $request->original_name,
+        ]);
+
+        return redirect()->back()->with('success', 'Nama file berhasil diperbarui!');
     }
 
     public function destroy(MediaFile $medium)
@@ -63,16 +125,4 @@ class MediaController extends Controller
         return redirect()->route('development.media.index')
             ->with('success', 'File berhasil dihapus dari media manager.');
     }
-    public function update(Request $request, MediaFile $medium)
-    {
-        $request->validate([
-            'original_name' => ['required', 'string', 'max:255'],
-        ]);
-
-        $medium->update([
-            'original_name' => $request->original_name,
-        ]);
-
-        return redirect()->back()->with('success', 'Nama file berhasil diperbarui!');
-    }                                       
 }

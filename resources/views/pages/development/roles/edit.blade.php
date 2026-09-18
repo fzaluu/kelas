@@ -7,8 +7,8 @@
 
     <!-- Header Navigation -->
     <div class="flex items-center space-x-3">
-        <a href="{{ route('development.roles.index') }}" class="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition shadow-sm shrink-0">
-            ⬅️
+        <a href="{{ route('development.roles.index') }}" class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition shadow-sm shrink-0">
+            Kembali
         </a>
         <div class="min-w-0">
             <h1 class="text-xl font-bold text-slate-900 truncate">Kelola Permission: {{ $role->name }}</h1>
@@ -36,7 +36,7 @@
                 </span>
             </div>
 
-            <!-- Checkbox Grid (Fluid Responsif: 1 kolom di HP, 2 kolom di Laptop, 3 kolom di Layar Besar) -->
+            <!-- Checkbox Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 @foreach($permGroup as $perm)
                 <label class="flex items-start space-x-3 p-3 rounded-xl border border-slate-200/80 hover:bg-blue-50/50 hover:border-blue-200 transition cursor-pointer group bg-slate-50/30">
@@ -60,13 +60,13 @@
         </div>
         @endforeach
 
-        <!-- Action Buttons (Sticky di layar HP/Desktop) -->
+        <!-- Action Buttons -->
         <div class="flex items-center justify-end space-x-3 pt-2">
             <a href="{{ route('development.roles.index') }}" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
                 Batal
             </a>
             <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-md shadow-blue-600/20">
-                Simpan Permasukan Permission
+                Simpan Perubahan Permission
             </button>
         </div>
     </form>

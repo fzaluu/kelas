@@ -9,16 +9,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('approval_status', ['APPROVED', 'PENDING', 'REJECTED'])
-                  ->default('APPROVED')
-                  ->after('status');
+            if (!Schema::hasColumn('users', 'approval_status')) {
+                $table->enum('approval_status', ['PENDING', 'APPROVED', 'REJECTED'])
+                      ->default('PENDING')
+                      ->after('status');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('approval_status');
+            if (Schema::hasColumn('users', 'approval_status')) {
+                $table->dropColumn('approval_status');
+            }
         });
     }
 };

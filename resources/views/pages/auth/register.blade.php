@@ -8,17 +8,14 @@
 </head>
 <body class="bg-gradient-to-br from-blue-50/70 via-slate-100 to-indigo-50/60 min-h-screen flex items-center justify-center p-4 sm:p-6 antialiased font-sans">
 
-    <!-- Decorative Soft Blobs -->
     <div class="fixed top-1/4 -left-20 w-80 h-80 bg-blue-400/15 rounded-full blur-3xl pointer-events-none"></div>
     <div class="fixed bottom-1/4 -right-20 w-80 h-80 bg-indigo-400/15 rounded-full blur-3xl pointer-events-none"></div>
 
-    <!-- Register Box Card -->
-    <div class="relative z-10 w-full max-w-md bg-white p-6 sm:p-8 rounded-3xl shadow-xl shadow-blue-950/5 border border-slate-200/80 space-y-5">
+    <div class="relative z-10 w-full max-w-md bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200/80 space-y-5">
         
-        <!-- Header & Back Link -->
         <div class="flex justify-between items-center">
             <a href="{{ route('login') }}" class="text-xs font-semibold text-slate-400 hover:text-blue-600 transition flex items-center space-x-1">
-                <span>← Kembali ke Login</span>
+                <span>Kembali ke Login</span>
             </a>
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 uppercase border border-blue-100">
                 SMKN 4 Tasikmalaya
@@ -35,11 +32,9 @@
             </div>
         </div>
 
-        <!-- FORM REGISTRATION -->
         <form action="{{ route('register.post') }}" method="POST" class="space-y-4">
             @csrf
 
-            <!-- NIS & Gender -->
             <div class="grid grid-cols-2 gap-3">
                 <div class="space-y-1">
                     <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">NIS *</label>
@@ -55,14 +50,12 @@
                 </div>
             </div>
 
-            <!-- Nama Lengkap -->
             <div class="space-y-1">
                 <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">NAMA LENGKAP *</label>
                 <input type="text" name="full_name" value="{{ old('full_name') }}" placeholder="Nama siswa" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition" required>
                 @error('full_name') <p class="text-[10px] text-rose-500 font-semibold">{{ $message }}</p> @enderror
             </div>
 
-            <!-- Username & Email -->
             <div class="space-y-1">
                 <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">USERNAME *</label>
                 <input type="text" name="username" value="{{ old('username') }}" placeholder="Username login" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition" required>
@@ -75,9 +68,7 @@
                 @error('email') <p class="text-[10px] text-rose-500 font-semibold">{{ $message }}</p> @enderror
             </div>
 
-            <!-- Password & Konfirmasi (Masing-masing memiliki Toggle Mata SVG) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <!-- Kata Sandi -->
                 <div class="space-y-1">
                     <label for="regPassInput" class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">KATA SANDI *</label>
                     <div class="relative">
@@ -102,7 +93,6 @@
                     @error('password') <p class="text-[10px] text-rose-500 font-semibold">{{ $message }}</p> @enderror
                 </div>
 
-                <!-- Konfirmasi Kata Sandi -->
                 <div class="space-y-1">
                     <label for="regPassConfirmInput" class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">KONFIRMASI *</label>
                     <div class="relative">
@@ -128,7 +118,7 @@
             </div>
 
             <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-600/20 transition hover:scale-[1.01] active:scale-[0.99]">
-                KIRIM PENGAJUAN PENDAFTARAN →
+                KIRIM PENGAJUAN PENDAFTARAN
             </button>
         </form>
 

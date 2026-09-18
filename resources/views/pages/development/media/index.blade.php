@@ -13,17 +13,16 @@
         <!-- Form Upload File -->
         <form action="{{ route('development.media.store') }}" method="POST" enctype="multipart/form-data" class="flex items-center space-x-2">
             @csrf
-            <input type="file" name="file" required class="text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            <input type="file" name="file" required class="text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition">
             <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shrink-0">
-                Unggah 🚀
+                UNGGAH BERKAS
             </button>
         </form>
     </div>
 
     @if(session('success'))
-        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
-            <span>✅</span>
-            <span class="font-semibold">{{ session('success') }}</span>
+        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+            {{ session('success') }}
         </div>
     @endif
 
@@ -33,11 +32,16 @@
             <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-3 hover:shadow-md transition">
                 <div>
                     <!-- Preview Gambar/Icon -->
-                    <div class="w-full h-28 bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center">
+                    <div class="w-full h-28 bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center relative">
                         @if(\Illuminate\Support\Str::startsWith($media->mime_type, 'image/'))
-                            <img src="{{ $media->url }}" class="w-full h-full object-cover">
+                            <img src="{{ Storage::url($media->storage_path) }}" alt="{{ $media->original_name }}" class="w-full h-full object-cover">
+                            <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-slate-900/70 text-white text-[9px] font-extrabold rounded uppercase backdrop-blur-sm">
+                                {{ $media->extension }}
+                            </span>
                         @else
-                            <span class="text-3xl">📄</span>
+                            <div class="text-center p-2">
+                                <span class="text-xs font-black uppercase text-slate-400 block">{{ $media->extension }}</span>
+                            </div>
                         @endif
                     </div>
 
@@ -47,7 +51,7 @@
                             {{ $media->original_name }}
                         </p>
                         <p class="text-[10px] text-slate-400 font-mono">
-                            {{ number_format($media->file_size / 1024, 1) }} KB
+                            {{ number_format(($media->size ?? $media->file_size) / 1024, 1) }} KB
                         </p>
                     </div>
                 </div>
@@ -55,7 +59,7 @@
                 <!-- Tombol Aksi: Edit & Hapus -->
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
                     <button type="button" onclick="openEditModal({{ $media->id }}, '{{ addslashes($media->original_name) }}')" class="font-bold text-blue-600 hover:underline">
-                        ✏️ Edit
+                        Edit Nama
                     </button>
 
                     <form action="{{ route('development.media.destroy', $media->id) }}" method="POST" onsubmit="return confirm('Hapus file ini?')">

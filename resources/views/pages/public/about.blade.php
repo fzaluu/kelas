@@ -4,7 +4,7 @@
 
 @section('content')
 
-<!-- HEADER HALAMAN (Micro-Hook & Context) -->
+<!-- HEADER HALAMAN -->
 <section class="bg-gradient-to-b from-blue-50/70 via-white to-slate-50 py-12 sm:py-16 border-b border-slate-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 uppercase tracking-wider inline-block mb-3">
@@ -14,7 +14,7 @@
             Mengenal XI PPLG 2 Lebih Dekat
         </h1>
         <p class="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl">
-            Informasi identitas, struktur organisasi, serta keanggotaan siswa Rekayasa Perangkat Lunak & Gim SMKN 4 Tasikmalaya.
+            Informasi identitas, struktur organisasi, serta keanggotaan siswa Rekayasa Perangkat Lunak & Gim SMKN 4 Kota Tasikmalaya.
         </p>
     </div>
 </section>
@@ -24,7 +24,7 @@
     <!-- 📖 1. PROFIL KELAS -->
     <section class="space-y-8">
         
-        <!-- 1.1 Identitas Kelas (Information Card) -->
+        <!-- Identitas Kelas Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Kelas</span>
@@ -48,11 +48,11 @@
             </div>
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Wali Kelas</span>
-                <span class="text-xs font-bold text-slate-800 truncate block mt-1" title="Portal Wali Kelas">Wali PPLG 2</span>
+                <span class="text-xs font-bold text-slate-800 truncate block mt-1">Wali PPLG 2</span>
             </div>
         </div>
 
-        <!-- 1.2 Deskripsi / Cerita Singkat & Motto -->
+        <!-- Deskripsi Singkat & Motto -->
         <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-4">
             <h2 class="text-xl font-bold text-slate-900">Tentang XI PPLG 2</h2>
             <p class="text-sm text-slate-600 leading-relaxed">
@@ -66,7 +66,7 @@
             @endif
         </div>
 
-        <!-- 1.3 Value / Nilai Kelas -->
+        <!-- Nilai Kebersamaan -->
         <div>
             <h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4">Nilai Utama Kebersamaan</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -93,7 +93,7 @@
             </div>
         </div>
 
-        <!-- 1.4 Visi & Misi -->
+        <!-- Visi & Misi -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bg-slate-900 text-white rounded-3xl p-8 space-y-3">
                 <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Cita-Cita Bersama</span>
@@ -125,20 +125,50 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             @forelse ($positions as $pos)
+                @php
+                    $titleName = $pos->title ?? $pos->position_name ?? 'Pengurus Kelas';
+                    $memberName = optional($pos->member)->name ?? 'Belum Ditentukan';
+                @endphp
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm space-y-3 hover:border-blue-300 transition">
                     <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-700 font-extrabold flex items-center justify-center mx-auto text-base uppercase">
-                        {{ substr($pos->member->name ?? 'P', 0, 2) }}
+                        {{ substr($memberName, 0, 2) }}
                     </div>
                     <div>
-                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">{{ $pos->title }}</span>
-                        <h4 class="font-bold text-sm text-slate-900 truncate" title="{{ $pos->member->name ?? '-' }}">
-                            {{ $pos->member->name ?? 'Belum Ditentukan' }}
+                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">{{ $titleName }}</span>
+                        <h4 class="font-bold text-sm text-slate-900 truncate mt-1" title="{{ $memberName }}">
+                            {{ $memberName }}
                         </h4>
                     </div>
                 </div>
             @empty
-                <div class="col-span-4 text-center py-8 text-xs text-slate-400 border border-dashed border-slate-200 rounded-2xl">
-                    Struktur pengurus kelas belum dikonfigurasi di database.
+                <!-- Fallback Pengurus Default bila DB Belum Diisi -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm space-y-3">
+                    <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-700 font-extrabold flex items-center justify-center mx-auto text-base uppercase">WK</div>
+                    <div>
+                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">Wali Kelas</span>
+                        <h4 class="font-bold text-sm text-slate-900">Wali PPLG 2</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm space-y-3">
+                    <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 font-extrabold flex items-center justify-center mx-auto text-base uppercase">KM</div>
+                    <div>
+                        <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Ketua Kelas</span>
+                        <h4 class="font-bold text-sm text-slate-900">Ketua XI PPLG 2</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm space-y-3">
+                    <div class="w-16 h-16 rounded-full bg-purple-100 text-purple-700 font-extrabold flex items-center justify-center mx-auto text-base uppercase">SK</div>
+                    <div>
+                        <span class="text-[10px] font-bold text-purple-600 uppercase tracking-wider block">Sekretaris</span>
+                        <h4 class="font-bold text-sm text-slate-900">Sekretaris Kelas</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm space-y-3">
+                    <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-700 font-extrabold flex items-center justify-center mx-auto text-base uppercase">BD</div>
+                    <div>
+                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">Bendahara</span>
+                        <h4 class="font-bold text-sm text-slate-900">Bendahara Kelas</h4>
+                    </div>
                 </div>
             @endforelse
         </div>
@@ -169,7 +199,7 @@
                 </div>
             @empty
                 <div class="col-span-6 text-center py-8 text-xs text-slate-400 border border-dashed border-slate-200 rounded-2xl">
-                    Belum ada data anggota siswa aktif.
+                    Belum ada data anggota siswa aktif di database. Tambahkan melalui menu Anggota Kelas di Dashboard Development.
                 </div>
             @endforelse
         </div>

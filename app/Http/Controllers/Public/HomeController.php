@@ -68,7 +68,8 @@ class HomeController extends Controller
         // 5. Preview 4 Album Galeri Terbaru
         $galleries = collect();
         if ($GalleryModel) {
-            $galleries = $GalleryModel::where('class_id', $classId)
+            $galleries = $GalleryModel::with('mediaFile')
+                ->where('class_id', $classId)
                 ->where('status', 'PUBLISHED')
                 ->where('visibility', 'PUBLIC')
                 ->orderBy('published_at', 'desc')
@@ -76,10 +77,11 @@ class HomeController extends Controller
                 ->get();
         }
 
-        // 6. Top 2 Featured Projects
-        $featuredProjects = collect();
+        // 6. Top 2 Projects (Ubah nama variabel dari $featuredProjects jadi $projects)
+        $projects = collect();
         if ($ProjectModel) {
-            $featuredProjects = $ProjectModel::where('class_id', $classId)
+            $projects = $ProjectModel::with('mediaFile')
+                ->where('class_id', $classId)
                 ->where('status', 'PUBLISHED')
                 ->where('visibility', 'PUBLIC')
                 ->take(2)
@@ -97,7 +99,7 @@ class HomeController extends Controller
                 ->get();
         }
 
-        // 8. Preview 6 Anggota Kelas (Hanya Filter member_status ACTIVE)
+        // 8. Preview 6 Anggota Kelas
         $members = collect();
         if ($MemberModel) {
             $members = $MemberModel::where('class_id', $classId)
@@ -112,7 +114,7 @@ class HomeController extends Controller
             'announcements',
             'agendas',
             'galleries',
-            'featuredProjects',
+            'projects', // 👈 Pakai $projects agar cocok dengan Blade
             'appreciations',
             'members'
         ));

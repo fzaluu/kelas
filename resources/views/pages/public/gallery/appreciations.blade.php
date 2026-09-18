@@ -28,15 +28,21 @@
                             {{ $app->level ?? 'TINGKAT KOTA/PROVINSI' }}
                         </span>
                         <span class="text-[11px] text-slate-400">
-                            {{ \Carbon\Carbon::parse($app->achievement_date)->format('M Y') }}
+                            {{ isset($app->achievement_date) && $app->achievement_date ? \Carbon\Carbon::parse($app->achievement_date)->format('M Y') : '-' }}
                         </span>
                     </div>
 
                     <h3 class="text-lg font-bold text-slate-900 leading-tight">{{ $app->title }}</h3>
                     <p class="text-xs text-slate-600 leading-relaxed">{{ $app->description }}</p>
 
+                    @if(optional($app->mediaFile)->file_path)
+                        <div class="h-36 rounded-xl overflow-hidden bg-slate-100 mt-2">
+                            <img src="{{ asset('storage/' . $app->mediaFile->file_path) }}" alt="{{ $app->title }}" class="w-full h-full object-cover">
+                        </div>
+                    @endif
+
                     <!-- Penerima Penghargaan -->
-                    @if($app->members->isNotEmpty())
+                    @if(isset($app->members) && count($app->members) > 0)
                         <div class="pt-3 border-t border-slate-100 mt-2">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Penerima Apresiasi:</span>
                             <div class="flex flex-wrap gap-1.5">
