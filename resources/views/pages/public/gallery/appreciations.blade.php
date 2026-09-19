@@ -18,40 +18,26 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @forelse ($appreciations as $app)
+            @php
+                $filePath = optional($app->mediaFile)->storage_path ?? optional($app->mediaFile)->file_path;
+            @endphp
             <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm flex items-start space-x-5 hover:border-amber-300 transition">
                 <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center font-extrabold text-2xl flex-shrink-0 shadow-sm">
                     🏆
                 </div>
                 <div class="space-y-2 flex-grow">
                     <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded uppercase">
-                            {{ $app->level ?? 'TINGKAT KOTA/PROVINSI' }}
-                        </span>
-                        <span class="text-[11px] text-slate-400">
-                            {{ isset($app->achievement_date) && $app->achievement_date ? \Carbon\Carbon::parse($app->achievement_date)->format('M Y') : '-' }}
+                        <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded uppercase border border-amber-200/60">
+                            Prestasi & Apresiasi
                         </span>
                     </div>
 
                     <h3 class="text-lg font-bold text-slate-900 leading-tight">{{ $app->title }}</h3>
                     <p class="text-xs text-slate-600 leading-relaxed">{{ $app->description }}</p>
 
-                    @if(optional($app->mediaFile)->file_path)
-                        <div class="h-36 rounded-xl overflow-hidden bg-slate-100 mt-2">
-                            <img src="{{ asset('storage/' . $app->mediaFile->file_path) }}" alt="{{ $app->title }}" class="w-full h-full object-cover">
-                        </div>
-                    @endif
-
-                    <!-- Penerima Penghargaan -->
-                    @if(isset($app->members) && count($app->members) > 0)
-                        <div class="pt-3 border-t border-slate-100 mt-2">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Penerima Apresiasi:</span>
-                            <div class="flex flex-wrap gap-1.5">
-                                @foreach($app->members as $am)
-                                    <span class="px-2 py-0.5 rounded bg-slate-100 text-[11px] font-semibold text-slate-700">
-                                        {{ $am->member->name ?? 'Siswa' }}
-                                    </span>
-                                @endforeach
-                            </div>
+                    @if($filePath)
+                        <div class="h-40 rounded-xl overflow-hidden bg-slate-100 mt-3 border border-slate-100">
+                            <img src="{{ \Illuminate\Support\Facades\Storage::url($filePath) }}" alt="{{ $app->title }}" class="w-full h-full object-cover">
                         </div>
                     @endif
                 </div>

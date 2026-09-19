@@ -39,8 +39,9 @@
 
 <div class="pt-3 pb-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider px-4">Konten & Media</div>
 
+<!-- Pusat Kelola Seluruh Konten Website Publik -->
 <a href="{{ route('development.public.announcements.index') }}" 
-   class="flex items-center px-4 py-2.5 rounded-xl font-medium {{ request()->routeIs('development.public.announcements.*') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} transition">
+   class="flex items-center px-4 py-2.5 rounded-xl font-medium {{ request()->routeIs('development.public.*') && !request()->routeIs('development.public.messages.*') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} transition">
     <span>Konten Website</span>
 </a>
 

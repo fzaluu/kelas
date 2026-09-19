@@ -18,10 +18,13 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse ($galleries as $item)
+            @php
+                $filePath = optional($item->mediaFile)->storage_path ?? optional($item->mediaFile)->file_path;
+            @endphp
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition group">
                 <div class="h-48 bg-slate-100 relative overflow-hidden flex items-center justify-center">
-                    @if(optional($item->mediaFile)->file_path)
-                        <img src="{{ asset('storage/' . $item->mediaFile->file_path) }}" 
+                    @if($filePath)
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url($filePath) }}" 
                              alt="{{ $item->title }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                     @else
@@ -31,13 +34,13 @@
                         </div>
                     @endif
                     <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase">
-                        {{ $item->category ?? 'ACTIVITY' }}
+                        Kegiatan
                     </span>
                 </div>
                 
                 <div class="p-5 space-y-2">
                     <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">
-                        {{ $item->category ?? 'DOKUMENTASI' }}
+                        DOKUMENTASI KEGIATAN
                     </span>
                     <h3 class="font-bold text-slate-900 text-base group-hover:text-blue-600 transition truncate">
                         {{ $item->title }}
@@ -57,11 +60,5 @@
             </div>
         @endforelse
     </div>
-
-    @if (method_exists($galleries, 'hasPages') && $galleries->hasPages())
-        <div class="mt-8">
-            {{ $galleries->links() }}
-        </div>
-    @endif
 </div>
 @endsection

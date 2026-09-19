@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 
 class GalleryController extends Controller
 {
+    /**
+     * Helper dynamic class loader untuk mengecek ketersediaan model khusus
+     */
     private function getModelClass(string $name, string $subfolder = '')
     {
         $namespacedWithFolder = "App\\Models\\{$subfolder}\\{$name}";
@@ -23,7 +26,7 @@ class GalleryController extends Controller
         return null;
     }
 
-    // 📸 1. Galeri Kegiatan
+    // 📸 1. Halaman Publik: Galeri Foto Kegiatan
     public function activities()
     {
         $classId = 1;
@@ -38,7 +41,7 @@ class GalleryController extends Controller
         return view('pages.public.gallery.activities', compact('galleries'));
     }
 
-    // 🚀 2. Karya & Project Showcase
+    // 🚀 2. Halaman Publik: Karya & Project Showcase
     public function projects()
     {
         $classId = 1;
@@ -46,28 +49,29 @@ class GalleryController extends Controller
 
         $projects = collect();
 
+        // Ambil dari tabel Project khusus jika ada
         if ($ProjectModel) {
             $projects = $ProjectModel::where('class_id', $classId)
                 ->where('status', 'PUBLISHED')
-                ->with(['members.member'])
+                ->with(['members.member', 'mediaFile'])
                 ->latest()
                 ->get();
         }
 
-        // Fallback jika belum mengisi tabel projects khusus, ambil dari Galeri berkategori PROJECT
+        // Fallback: Jika tabel project kosong/belum terisi, ambil dari Galeri berkategori PROJECT
         if ($projects->isEmpty()) {
             $projects = Gallery::where('class_id', $classId)
                 ->where('status', 'PUBLISHED')
                 ->where('category', 'PROJECT')
                 ->with(['mediaFile'])
-                ->latest()
+                ->latest('published_at')
                 ->get();
         }
 
         return view('pages.public.gallery.projects', compact('projects'));
     }
 
-    // 🏆 3. Prestasi & Apresiasi
+    // 🏆 3. Halaman Publik: Prestasi & Apresiasi
     public function appreciations()
     {
         $classId = 1;
@@ -75,21 +79,22 @@ class GalleryController extends Controller
 
         $appreciations = collect();
 
+        // Ambil dari tabel Appreciation khusus jika ada
         if ($AppreciationModel) {
             $appreciations = $AppreciationModel::where('class_id', $classId)
                 ->where('status', 'PUBLISHED')
-                ->with(['members.member'])
+                ->with(['members.member', 'mediaFile'])
                 ->latest('achievement_date')
                 ->get();
         }
 
-        // Fallback jika belum mengisi tabel appreciations khusus, ambil dari Galeri berkategori APPRECIATION
+        // Fallback: Jika tabel appreciation belum terisi, ambil dari Galeri berkategori APPRECIATION
         if ($appreciations->isEmpty()) {
             $appreciations = Gallery::where('class_id', $classId)
                 ->where('status', 'PUBLISHED')
                 ->where('category', 'APPRECIATION')
                 ->with(['mediaFile'])
-                ->latest()
+                ->latest('published_at')
                 ->get();
         }
 
