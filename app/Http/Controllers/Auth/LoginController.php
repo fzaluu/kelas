@@ -36,25 +36,18 @@ class LoginController extends Controller
         // Verifikasi User & Password
         if ($user && Hash::check($password, $user->password)) {
             
-            // 1. Cek Status Persetujuan (Approval Gate)
-            if ($user->approval_status === 'PENDING') {
-                return back()->with('error', '⚠️ Akun Anda masih dalam proses peninjauan oleh Developer. Silakan hubungi Dev untuk persetujuan.')->withInput();
-            }
-
-            if ($user->approval_status === 'REJECTED') {
-                return back()->with('error', '❌ Pendaftaran akun Anda tidak disetujui oleh Developer.')->withInput();
-            }
-
-            // 2. Cek Status Keaktifan Akun
+            // Cek Keaktifan Akun
             if ($user->status !== 'ACTIVE') {
-                return back()->with('error', '🔒 Akun Anda dinonaktifkan oleh administrator.')->withInput();
+                return back()->with('error', '🔒 Akun Anda belum aktif atau sedang dinonaktifkan oleh administrator.')->withInput();
             }
 
             // Login pengguna
             Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
 
-            // Redirect sesuai Role masing-masing
+            // Update last_login_at
+            $user->update(['last_login_at' => now()]);
+
             return $this->redirectUserByRole($user);
         }
 

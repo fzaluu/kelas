@@ -44,52 +44,47 @@
     <!-- Grid Foto Galeri -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         @forelse($galleries as $item)
-            @php
-                $filePath = optional($item->mediaFile)->storage_path ?? optional($item->mediaFile)->file_path;
-            @endphp
-            <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-3 hover:shadow-md transition">
-                <div>
-                    <!-- Preview Foto -->
-                    <div class="w-full h-28 bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center relative">
-                        @if($filePath)
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($filePath) }}" alt="{{ $item->title }}" class="w-full h-full object-cover">
-                        @else
-                            <span class="text-[10px] text-slate-400 font-bold">Tanpa Gambar</span>
-                        @endif
+                @php
+                    $firstMedia = $item->galleryMedia->first()?->mediaFile;
+                @endphp
+                <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-3 hover:shadow-md transition">
+                    <div>
+                        <!-- Preview Foto -->
+                        <div class="w-full h-28 bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center relative">
+                            @if($firstMedia)
+                                <img src="{{ $firstMedia->url }}" alt="{{ $item->title }}" class="w-full h-full object-cover">
+                            @else
+                                <span class="text-[10px] text-slate-400 font-bold">Tanpa Gambar</span>
+                            @endif
+                        </div>
+
+                        <!-- Judul & Kategori -->
+                        <div class="mt-2 space-y-1">
+                            <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-blue-50 text-blue-700 uppercase border border-blue-200/60 inline-block">
+                                {{ $item->category }}
+                            </span>
+                            <p class="text-xs font-bold text-slate-800 truncate" title="{{ $item->title }}">
+                                {{ $item->title }}
+                            </p>
+                        </div>
                     </div>
 
-                    <!-- Judul & Kategori Bahasa Indonesia -->
-                    <div class="mt-2 space-y-1">
-                        @if($item->category === 'PROJECT')
-                            <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200/60 inline-block">Karya Siswa</span>
-                        @elseif($item->category === 'APPRECIATION')
-                            <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200/60 inline-block">Prestasi</span>
-                        @else
-                            <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200/60 inline-block">Kegiatan</span>
-                        @endif
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
+                        <span class="font-bold {{ $item->status === 'PUBLISHED' ? 'text-emerald-600' : 'text-amber-600' }}">
+                            {{ $item->status === 'PUBLISHED' ? 'Terbit' : 'Konsep' }}
+                        </span>
 
-                        <p class="text-xs font-bold text-slate-800 truncate" title="{{ $item->title }}">
-                            {{ $item->title }}
-                        </p>
+                        <form action="{{ route('development.public.galleries.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus konten ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="font-bold text-rose-600 hover:underline">Hapus</button>
+                        </form>
                     </div>
                 </div>
-
-                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
-                    <span class="font-bold {{ $item->status === 'PUBLISHED' ? 'text-emerald-600' : 'text-amber-600' }}">
-                        {{ $item->status === 'PUBLISHED' ? 'Terbit' : 'Konsep' }}
-                    </span>
-
-                    <form action="{{ route('development.public.galleries.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus konten ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="font-bold text-rose-600 hover:underline">Hapus</button>
-                    </form>
+            @empty
+                <div class="col-span-full py-12 text-center text-slate-400 text-xs italic">
+                    Belum ada konten galeri yang tersimpan.
                 </div>
-            </div>
-        @empty
-            <div class="col-span-full py-12 text-center text-slate-400 text-xs italic">
-                Belum ada konten galeri yang tersimpan.
-            </div>
         @endforelse
     </div>
 

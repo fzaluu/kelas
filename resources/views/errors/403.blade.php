@@ -21,6 +21,7 @@
                 ← Kembali ke Beranda
             </a>
         </div>
+        
     </div>
 </div>
 @endsection

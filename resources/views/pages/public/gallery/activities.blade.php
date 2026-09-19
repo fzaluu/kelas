@@ -18,46 +18,46 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse ($galleries as $item)
-            @php
-                $filePath = optional($item->mediaFile)->storage_path ?? optional($item->mediaFile)->file_path;
-            @endphp
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition group">
-                <div class="h-48 bg-slate-100 relative overflow-hidden flex items-center justify-center">
-                    @if($filePath)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($filePath) }}" 
-                             alt="{{ $item->title }}" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                    @else
-                        <div class="text-center text-slate-400">
-                            <span class="text-3xl block mb-1">📷</span>
-                            <span class="text-[11px] font-medium">Tidak ada foto</span>
+                @php
+                    $firstMedia = $item->galleryMedia->first()?->mediaFile;
+                @endphp
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition group">
+                    <div class="h-48 bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                        @if($firstMedia)
+                            <img src="{{ $firstMedia->url }}" 
+                                alt="{{ $item->title }}" 
+                                class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        @else
+                            <div class="text-center text-slate-400">
+                                <span class="text-3xl block mb-1">📷</span>
+                                <span class="text-[11px] font-medium">Tidak ada foto</span>
+                            </div>
+                        @endif
+                        <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase">
+                            Kegiatan
+                        </span>
+                    </div>
+                    
+                    <div class="p-5 space-y-2">
+                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">
+                            DOKUMENTASI KEGIATAN
+                        </span>
+                        <h3 class="font-bold text-slate-900 text-base group-hover:text-blue-600 transition truncate">
+                            {{ $item->title }}
+                        </h3>
+                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                            {{ $item->description ?? 'Dokumentasi resmi kegiatan siswa XI PPLG 2.' }}
+                        </p>
+                        <div class="pt-3 border-t border-slate-100 flex justify-between items-center text-[11px] text-slate-400">
+                            <span>{{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('d M Y') : '-' }}</span>
+                            <span class="font-bold text-blue-600">Terbit</span>
                         </div>
-                    @endif
-                    <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase">
-                        Kegiatan
-                    </span>
-                </div>
-                
-                <div class="p-5 space-y-2">
-                    <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">
-                        DOKUMENTASI KEGIATAN
-                    </span>
-                    <h3 class="font-bold text-slate-900 text-base group-hover:text-blue-600 transition truncate">
-                        {{ $item->title }}
-                    </h3>
-                    <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                        {{ $item->description ?? 'Dokumentasi resmi kegiatan siswa XI PPLG 2.' }}
-                    </p>
-                    <div class="pt-3 border-t border-slate-100 flex justify-between items-center text-[11px] text-slate-400">
-                        <span>{{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('d M Y') : '-' }}</span>
-                        <span class="font-bold text-blue-600">Terbit</span>
                     </div>
                 </div>
-            </div>
-        @empty
-            <div class="col-span-3 text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
-                <p class="text-xs text-slate-400">Belum ada foto kegiatan yang dipublikasikan.</p>
-            </div>
+            @empty
+                <div class="col-span-3 text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
+                    <p class="text-xs text-slate-400">Belum ada foto kegiatan yang dipublikasikan.</p>
+                </div>
         @endforelse
     </div>
 </div>

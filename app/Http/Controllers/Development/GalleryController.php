@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Development;
 
 use App\Http\Controllers\Controller;
 use App\Models\Content\Gallery;
+use App\Models\Content\GalleryMedia;
 use App\Models\Media\MediaFile;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,7 @@ class GalleryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Gallery::with(['mediaFile', 'creator'])->latest();
+        $query = Gallery::with(['galleryMedia.mediaFile', 'creator'])->latest();
 
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
@@ -41,16 +42,23 @@ class GalleryController extends Controller
 
         $publishedAt = $request->status === 'PUBLISHED' ? now() : null;
 
-        Gallery::create([
-            'class_id'      => 1,
+        // 1. Buat Album Gallery
+        $gallery = Gallery::create([
+            'class_id'      => 1, // Akan disesuaikan saat context resolver siap
             'title'         => $request->title,
             'category'      => $request->category,
-            'media_file_id' => $request->media_file_id,
             'status'        => $request->status,
             'visibility'    => $request->visibility,
             'published_at'  => $publishedAt,
             'description'   => $request->description,
             'created_by'    => auth()->id(),
+        ]);
+
+        // 2. Hubungkan Media ke Gallery melalui tabel pivot gallery_media
+        GalleryMedia::create([
+            'gallery_id'    => $gallery->id,
+            'media_file_id' => $request->media_file_id,
+            'sort_order'    => 1,
         ]);
 
         return redirect()->route('development.public.galleries.index')

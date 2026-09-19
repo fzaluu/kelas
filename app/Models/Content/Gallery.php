@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Core\SchoolClass;
 use App\Models\Core\User;
-use App\Models\Media\MediaFile;
 
 class Gallery extends Model
 {
@@ -18,7 +17,6 @@ class Gallery extends Model
 
     protected $fillable = [
         'class_id',
-        'media_file_id',
         'title',
         'description',
         'category',
@@ -44,15 +42,18 @@ class Gallery extends Model
     }
 
     /**
-     * Relasi ke File Gambar Utama (PENTING untuk menampilkan preview foto)
+     * Relasi Album (Gallery menampung media melalui gallery_media)
      */
-    public function mediaFile(): BelongsTo
-    {
-        return $this->belongsTo(MediaFile::class, 'media_file_id');
-    }
-
     public function galleryMedia(): HasMany
     {
         return $this->hasMany(GalleryMedia::class, 'gallery_id')->orderBy('sort_order', 'asc');
+    }
+
+    /**
+     * Helper untuk mengambil foto cover / foto pertama album
+     */
+    public function coverMedia()
+    {
+        return $this->hasOne(GalleryMedia::class, 'gallery_id')->orderBy('sort_order', 'asc');
     }
 }

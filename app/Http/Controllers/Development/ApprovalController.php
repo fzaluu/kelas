@@ -3,102 +3,96 @@
 namespace App\Http\Controllers\Development;
 
 use App\Http\Controllers\Controller;
-use App\Models\Core\User;
+use App\Models\Core\AccountRegistration;
 use App\Models\Core\Member;
+use App\Models\Core\User;
+use App\Models\Core\Role;
+use App\Models\Core\SchoolClass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class ApprovalController extends Controller
 {
     public function index()
     {
-        // Hanya ambil pendaftaran mandiri yang kedua kolom statusnya bernilai PENDING
-        $pendingUsers = User::query()
-            ->where(function ($q) {
-                if (Schema::hasColumn('users', 'approval_status')) {
-                    $q->where('approval_status', 'PENDING');
-                }
-            })
-            ->where(function ($q) {
-                if (Schema::hasColumn('users', 'status')) {
-                    $q->where('status', 'PENDING');
-                }
-            })
+        // Ambil pendaftaran mandiri yang berstatus PENDING
+        $pendingRegistrations = AccountRegistration::where('status', 'PENDING')
             ->latest()
             ->paginate(15);
 
-        return view('pages.development.approvals.index', compact('pendingUsers'));
+        return view('pages.development.approvals.index', compact('pendingRegistrations'));
     }
 
     public function approve($id)
     {
-        $user = User::findOrFail($id);
+        $registration = AccountRegistration::findOrFail($id);
 
-        DB::transaction(function () use ($user) {
-            $memberId = $user->member_id;
+        if ($registration->status !== 'PENDING') {
+            return redirect()->back()->with('error', 'Pendaftaran ini sudah diproses sebelumnya.');
+        }
 
-            if (!$memberId) {
-                $memberData = [
-                    'class_id' => 1,
-                    'name'     => $user->name ?? $user->username,
-                ];
+        DB::transaction(function () use ($registration) {
+            // 1. Dapatkan ID Kelas Aktif
+            $activeClass = SchoolClass::first();
+            $classId = $activeClass ? $activeClass->id : 1;
 
-                if (Schema::hasColumn('members', 'gender')) {
-                    $memberData['gender'] = 'L';
-                }
+            // 2. Buat Record Member (Single Source of Truth)
+            $member = Member::create([
+                'class_id'      => $classId,
+                'nis'           => $registration->nis,
+                'nisn'          => $registration->nisn,
+                'name'          => $registration->full_name,
+                'gender'        => $registration->gender,
+                'member_status' => 'ACTIVE',
+                'joined_at'     => now(),
+            ]);
 
-                if (Schema::hasColumn('members', 'member_status')) {
-                    $memberData['member_status'] = 'ACTIVE';
-                } elseif (Schema::hasColumn('members', 'status')) {
-                    $memberData['status'] = 'ACTIVE';
-                }
+            // 3. Buat Record User
+            $user = User::create([
+                'member_id' => $member->id,
+                'username'  => $registration->username,
+                'email'     => $registration->email,
+                'password'  => $registration->password, // Sudah berupa hash dari registration
+                'status'    => 'ACTIVE',
+            ]);
 
-                $member = Member::create($memberData);
-                $memberId = $member->id;
+            // 4. Attach Role 'student' (atau 'siswa')
+            $studentRole = Role::where('slug', 'student')
+                ->orWhere('name', 'student')
+                ->orWhere('slug', 'siswa')
+                ->first();
+
+            if ($studentRole) {
+                $user->roles()->attach($studentRole->id, [
+                    'assigned_at' => now(),
+                    'assigned_by' => auth()->id(),
+                ]);
             }
 
-            $updateData = [];
-
-            if (Schema::hasColumn('users', 'approval_status')) {
-                $updateData['approval_status'] = 'APPROVED';
-            }
-
-            if (Schema::hasColumn('users', 'status')) {
-                $updateData['status'] = 'ACTIVE';
-            }
-
-            if (Schema::hasColumn('users', 'member_id')) {
-                $updateData['member_id'] = $memberId;
-            }
-
-            $updateData['updated_at'] = now();
-
-            DB::table('users')->where('id', $user->id)->update($updateData);
+            // 5. Update Status Registrasi
+            $registration->update([
+                'status'      => 'APPROVED',
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
+            ]);
         });
 
         return redirect()->route('development.approvals.index')
-            ->with('success', 'Akun pengguna berhasil disetujui!');
+            ->with('success', "Pendaftaran {$registration->full_name} berhasil disetujui dan akun siswa telah aktif!");
     }
 
-    public function reject($id)
+    public function reject(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $registration = AccountRegistration::findOrFail($id);
 
-        $updateData = [];
-        if (Schema::hasColumn('users', 'approval_status')) {
-            $updateData['approval_status'] = 'REJECTED';
-        }
-
-        if (Schema::hasColumn('users', 'status')) {
-            $updateData['status'] = 'INACTIVE';
-        }
-
-        $updateData['updated_at'] = now();
-
-        DB::table('users')->where('id', $user->id)->update($updateData);
+        $registration->update([
+            'status'           => 'REJECTED',
+            'rejection_reason' => $request->input('rejection_reason', 'Pendaftaran ditolak oleh administrator.'),
+            'reviewed_by'      => auth()->id(),
+            'reviewed_at'      => now(),
+        ]);
 
         return redirect()->route('development.approvals.index')
-            ->with('success', 'Pendaftaran akun telah ditolak.');
+            ->with('success', "Pendaftaran {$registration->full_name} telah ditolak.");
     }
 }
