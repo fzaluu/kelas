@@ -114,7 +114,7 @@
 
             <button type="submit" 
                     class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-600/20 transition hover:scale-[1.01] active:scale-[0.99]">
-                MASUK SEKARANG
+                MASUK
             </button>
         </form>
 

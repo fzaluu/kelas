@@ -21,6 +21,7 @@ class User extends Authenticatable
         'email',
         'password',
         'status',
+        'approval_status',
         'last_login_at',
     ];
 
@@ -33,7 +34,7 @@ class User extends Authenticatable
     {
         return [
             'last_login_at' => 'datetime',
-            'password' => 'hashed',
+            'password'      => 'hashed',
         ];
     }
 

@@ -34,9 +34,12 @@ class UserController extends Controller
 
     public function create()
     {
-        $roles = Role::all();
-        // Mengambil siswa/member yang belum terikat dengan akun user mana pun
-        $unlinkedMembers = Member::whereDoesntHave('user')->orderBy('name', 'asc')->get();
+        $roles = Role::orderBy('name', 'asc')->get();
+        
+        // Ambil seluruh data anggota kelas XI PPLG 2 untuk pilihan dropdown
+        $unlinkedMembers = Member::where('class_id', 1)
+            ->orderBy('name', 'asc')
+            ->get();
 
         return view('pages.development.users.create', compact('roles', 'unlinkedMembers'));
     }
@@ -45,30 +48,32 @@ class UserController extends Controller
     {
         DB::transaction(function () use ($request) {
             $user = User::create([
-                'member_id' => $request->member_id,
-                'username'  => $request->username,
-                'email'     => $request->email,
-                'password'  => $request->password,
-                'status'    => $request->status ?? 'ACTIVE',
+                'member_id'       => $request->member_id,
+                'username'        => $request->username,
+                'email'           => $request->email,
+                'password'        => $request->password, // Otomatis di-hash oleh casts Model
+                'status'          => $request->status ?? 'ACTIVE',
+                'approval_status' => 'APPROVED', // Paksa langsung APPROVED untuk buatan Admin
             ]);
 
-            $user->roles()->attach($request->role_id, [
-                'assigned_at' => now(),
-                'assigned_by' => auth()->id(),
-            ]);
+            if ($request->filled('role_id')) {
+                $user->roles()->attach($request->role_id, [
+                    'assigned_at' => now(),
+                    'assigned_by' => auth()->id(),
+                ]);
+            }
         });
 
         return redirect()->route('development.users.index')
-            ->with('success', 'Pengguna berhasil dibuat dan terhubung dengan role!');
+            ->with('success', 'Pengguna baru berhasil dibuat dan langsung aktif!');
     }
 
     public function edit(User $user)
     {
-        $roles = Role::all();
+        $roles = Role::orderBy('name', 'asc')->get();
         $user->load(['roles', 'member']);
         
-        $unlinkedMembers = Member::whereDoesntHave('user')
-            ->orWhere('id', $user->member_id)
+        $unlinkedMembers = Member::where('class_id', 1)
             ->orderBy('name', 'asc')
             ->get();
 
@@ -79,10 +84,11 @@ class UserController extends Controller
     {
         DB::transaction(function () use ($request, $user) {
             $data = [
-                'member_id' => $request->member_id,
-                'username'  => $request->username,
-                'email'     => $request->email,
-                'status'    => $request->status,
+                'member_id'       => $request->member_id,
+                'username'        => $request->username,
+                'email'           => $request->email,
+                'status'          => $request->status,
+                'approval_status' => 'APPROVED',
             ];
 
             if ($request->filled('password')) {
@@ -90,10 +96,13 @@ class UserController extends Controller
             }
 
             $user->update($data);
-            $user->roles()->sync([$request->role_id => [
-                'assigned_at' => now(),
-                'assigned_by' => auth()->id(),
-            ]]);
+
+            if ($request->filled('role_id')) {
+                $user->roles()->sync([$request->role_id => [
+                    'assigned_at' => now(),
+                    'assigned_by' => auth()->id(),
+                ]]);
+            }
         });
 
         return redirect()->route('development.users.index')

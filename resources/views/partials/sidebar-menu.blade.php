@@ -10,6 +10,11 @@
     <span>User & Akses</span>
 </a>
 
+<a href="{{ route('development.approvals.index') }}" 
+   class="flex items-center px-4 py-2.5 rounded-xl font-medium {{ request()->routeIs('development.approvals.*') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} transition">
+    <span>Persetujuan Akun</span>
+</a>
+
 <a href="{{ route('development.roles.index') }}" 
    class="flex items-center px-4 py-2.5 rounded-xl font-medium {{ request()->routeIs('development.roles.*') ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} transition">
     <span>Role & Permission</span>
