@@ -15,6 +15,8 @@ use App\Http\Controllers\Development\AnnouncementController as DevAnnouncementCo
 use App\Http\Controllers\Development\AgendaController as DevAgendaController;
 use App\Http\Controllers\Development\ClassDocumentController as DevClassDocumentController;
 use App\Http\Controllers\Development\GalleryController as DevGalleryController;
+use App\Http\Controllers\Development\ProjectController as DevProjectController;
+use App\Http\Controllers\Development\AppreciationController as DevAppreciationController;
 use App\Http\Controllers\Development\ScheduleController as DevScheduleController;
 use App\Http\Controllers\Development\TaskController as DevTaskController;
 use App\Http\Controllers\Development\ContactMessageController as DevContactMessageController;
@@ -122,6 +124,23 @@ Route::middleware('auth')->group(function () {
             // Pesan Masukan Kontak
             Route::get('/messages', [DevContactMessageController::class, 'index'])->name('messages.index');
             Route::delete('/messages/{id}', [DevContactMessageController::class, 'destroy'])->name('messages.destroy');
+        });
+
+        // CMS Khusus Karya & Prestasi (Di bawah namespace development.content)
+        Route::prefix('content')->group(function () {
+            Route::resource('projects', DevProjectController::class)->except(['show', 'edit', 'update'])->names([
+                'index'   => 'development.content.projects.index',
+                'create'  => 'development.content.projects.create',
+                'store'   => 'development.content.projects.store',
+                'destroy' => 'development.content.projects.destroy',
+            ]);
+
+            Route::resource('appreciations', DevAppreciationController::class)->except(['show', 'edit', 'update'])->names([
+                'index'   => 'development.content.appreciations.index',
+                'create'  => 'development.content.appreciations.create',
+                'store'   => 'development.content.appreciations.store',
+                'destroy' => 'development.content.appreciations.destroy',
+            ]);
         });
 
         // Pengaturan Sistem

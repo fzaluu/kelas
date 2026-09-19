@@ -34,4 +34,9 @@ class Appreciation extends Model
     {
         return $this->hasMany(AppreciationMember::class, 'appreciation_id');
     }
+
+    public function appreciationMedia(): HasMany
+    {
+        return $this->hasMany(AppreciationMedia::class, 'appreciation_id')->orderBy('sort_order', 'asc');
+    }
 }

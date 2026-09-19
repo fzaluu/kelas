@@ -23,7 +23,7 @@ class HomeController extends Controller
 
     public function index()
     {
-        $classId = 1; // Default Scope XI PPLG 2
+        $classId = SchoolClass::getActiveId();
 
         // Resolve Model Classes
         $ClassProfileModel = $this->getModelClass('ClassProfile', 'Core');

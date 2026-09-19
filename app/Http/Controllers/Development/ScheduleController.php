@@ -5,20 +5,26 @@ namespace App\Http\Controllers\Development;
 use App\Http\Controllers\Controller;
 use App\Models\Academic\Schedule;
 use App\Models\Academic\Piket;
+use App\Models\Core\SchoolClass;
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
 {
     public function index(Request $request)
     {
+        $classId = SchoolClass::getActiveId();
         $days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT'];
 
-        $schedules = Schedule::orderBy('day')
+        $schedules = Schedule::where('class_id', $classId)
+            ->orderBy('day')
             ->orderBy('start_time')
             ->get()
             ->groupBy('day');
 
-        $pikets = Piket::orderBy('day')->get()->groupBy('day');
+        $pikets = Piket::where('class_id', $classId)
+            ->orderBy('day')
+            ->get()
+            ->groupBy('day');
 
         return view('pages.development.academic.schedules.index', compact('days', 'schedules', 'pikets'));
     }
@@ -35,7 +41,7 @@ class ScheduleController extends Controller
         ]);
 
         Schedule::create([
-            'class_id'     => 1,
+            'class_id'     => SchoolClass::getActiveId(), // ✅ Dinamis
             'day'          => $request->day,
             'subject_name' => $request->subject_name,
             'teacher_name' => $request->teacher_name,
@@ -64,7 +70,7 @@ class ScheduleController extends Controller
         ]);
 
         Piket::create([
-            'class_id'     => 1,
+            'class_id'     => SchoolClass::getActiveId(), // ✅ Dinamis
             'day'          => $request->day,
             'student_name' => $request->student_name,
         ]);

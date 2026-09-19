@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Core\SchoolClass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -29,7 +30,7 @@ class ContactController extends Controller
 
     public function index()
     {
-        $classId = 1; // XI PPLG 2 Scope
+        $classId = SchoolClass::getActiveId(); // ✅ Dinamis via SchoolClass
         
         $ClassProfileModel = $this->getModelClass('ClassProfile', 'Core');
         
@@ -72,7 +73,7 @@ class ContactController extends Controller
         }
 
         if (Schema::hasColumn($tableName, 'class_id')) {
-            $insertData['class_id'] = 1;
+            $insertData['class_id'] = SchoolClass::getActiveId(); // ✅ Dinamis via SchoolClass
         }
 
         if (Schema::hasColumn($tableName, 'subject')) {

@@ -19,7 +19,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @forelse ($appreciations as $app)
             @php
-                $filePath = optional($app->mediaFile)->storage_path ?? optional($app->mediaFile)->file_path;
+                $firstMedia = $app->appreciationMedia->first()?->mediaFile;
             @endphp
             <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm flex items-start space-x-5 hover:border-amber-300 transition">
                 <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center font-extrabold text-2xl flex-shrink-0 shadow-sm">
@@ -35,9 +35,9 @@
                     <h3 class="text-lg font-bold text-slate-900 leading-tight">{{ $app->title }}</h3>
                     <p class="text-xs text-slate-600 leading-relaxed">{{ $app->description }}</p>
 
-                    @if($filePath)
+                    @if($firstMedia)
                         <div class="h-40 rounded-xl overflow-hidden bg-slate-100 mt-3 border border-slate-100">
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($filePath) }}" alt="{{ $app->title }}" class="w-full h-full object-cover">
+                            <img src="{{ $firstMedia->url }}" alt="{{ $app->title }}" class="w-full h-full object-cover">
                         </div>
                     @endif
                 </div>

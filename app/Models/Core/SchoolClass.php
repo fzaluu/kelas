@@ -11,9 +11,18 @@ class SchoolClass extends Model
 
     protected $guarded = ['id'];
 
+    /**
+     * Helper Dinamis untuk Mengambil ID Kelas Aktif
+     */
+    public static function getActiveId(): int
+    {
+        $activeClass = self::first();
+        return $activeClass ? $activeClass->id : 1;
+    }
+
     public function members(): HasMany
     {
-        return $this->hasMany(Member::class, 'class_id'); // ✅ Diganti dari $table ke $this
+        return $this->hasMany(Member::class, 'class_id');
     }
 
     public function classTeachers(): HasMany

@@ -19,20 +19,28 @@
     <!-- Tab Sub-Menu Konten Publik -->
     <div class="flex items-center space-x-2 border-b border-slate-200 overflow-x-auto pb-2">
         <a href="{{ route('development.public.announcements.index') }}" 
-           class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.public.announcements.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
+        class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.public.announcements.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
             Pengumuman
         </a>
         <a href="{{ route('development.public.agendas.index') }}" 
-           class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.public.agendas.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
+        class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.public.agendas.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
             Agenda Kelas
         </a>
         <a href="{{ route('development.public.documents.index') }}" 
-           class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.public.documents.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
+        class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.public.documents.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
             Dokumentasi
         </a>
         <a href="{{ route('development.public.galleries.index') }}" 
-           class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.public.galleries.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
+        class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.public.galleries.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
             Galeri Kegiatan
+        </a>
+        <a href="{{ route('development.content.projects.index') }}" 
+        class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.content.projects.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
+            Karya Siswa
+        </a>
+        <a href="{{ route('development.content.appreciations.index') }}" 
+        class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 {{ request()->routeIs('development.content.appreciations.*') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
+            Prestasi
         </a>
     </div>
 

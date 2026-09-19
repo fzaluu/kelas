@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Academic\Schedule;
 use App\Models\Academic\Piket;
+use App\Models\Core\SchoolClass;
 
 class InformationController extends Controller
 {
@@ -26,7 +27,7 @@ class InformationController extends Controller
     // 1. Pengumuman
     public function announcements()
     {
-        $classId = 1;
+        $classId = SchoolClass::getActiveId(); // ✅ Dinamis via SchoolClass
         $AnnouncementModel = $this->getModelClass('Announcement', 'Content');
 
         $announcements = collect();
@@ -43,7 +44,7 @@ class InformationController extends Controller
     // 2. Agenda
     public function agendas()
     {
-        $classId = 1;
+        $classId = SchoolClass::getActiveId(); // ✅ Dinamis via SchoolClass
         $AgendaModel = $this->getModelClass('Agenda', 'Content');
 
         $upcomingAgendas = collect();
@@ -70,7 +71,7 @@ class InformationController extends Controller
     // 3. Tugas Publik
     public function tasks()
     {
-        $classId = 1;
+        $classId = SchoolClass::getActiveId(); // ✅ Dinamis via SchoolClass
         $TaskModel = $this->getModelClass('Task', 'Academic');
 
         $activeTasks = collect();
@@ -92,7 +93,7 @@ class InformationController extends Controller
     // 4. Jadwal (Pelajaran + Piket Dinamis)
     public function schedules()
     {
-        $classId = 1;
+        $classId = SchoolClass::getActiveId(); // ✅ Dinamis via SchoolClass
 
         // Ambil Jadwal Pelajaran
         $schedules = Schedule::where('class_id', $classId)

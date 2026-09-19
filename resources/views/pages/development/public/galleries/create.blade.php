@@ -6,8 +6,8 @@
 <div class="max-w-2xl mx-auto space-y-6">
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Tambah Konten Publik Baru</h1>
-            <p class="text-xs text-slate-500">Unggah foto kegiatan, publikasikan karya siswa, atau catat prestasi kelas XI PPLG 2.</p>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Tambah Foto Kegiatan Baru</h1>
+            <p class="text-xs text-slate-500">Unggah foto dokumentasi kegiatan kelas XI PPLG 2 ke galeri visual.</p>
         </div>
         <a href="{{ route('development.public.galleries.index') }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 transition">
             ← Kembali
@@ -19,19 +19,17 @@
 
         <!-- Judul Konten -->
         <div class="space-y-1">
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Judul Konten *</label>
-            <input type="text" name="title" required value="{{ old('title') }}" placeholder="Contoh: Kunjungan Industri / Aplikasi Kasir XI PPLG 2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Judul Kegiatan *</label>
+            <input type="text" name="title" required value="{{ old('title') }}" placeholder="Contoh: Kunjungan Industri / Class Meeting 2026" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
             @error('title') <p class="text-[10px] text-rose-500 font-semibold">{{ $message }}</p> @enderror
         </div>
 
-        <!-- Pilihan Kategori, Status & Akses dalam Bahasa Indonesia -->
+        <!-- Pilihan Kategori, Status & Akses -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div class="space-y-1">
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Kategori *</label>
                 <select name="category" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600 bg-white transition">
                     <option value="ACTIVITY" {{ old('category') === 'ACTIVITY' ? 'selected' : '' }}>Kegiatan</option>
-                    <option value="PROJECT" {{ old('category') === 'PROJECT' ? 'selected' : '' }}>Karya Siswa</option>
-                    <option value="APPRECIATION" {{ old('category') === 'APPRECIATION' ? 'selected' : '' }}>Prestasi & Apresiasi</option>
                     <option value="OTHER" {{ old('category') === 'OTHER' ? 'selected' : '' }}>Lainnya</option>
                 </select>
             </div>
@@ -72,7 +70,7 @@
         <!-- Deskripsi -->
         <div class="space-y-1">
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Deskripsi / Keterangan Konten</label>
-            <textarea name="description" rows="3" placeholder="Tuliskan keterangan detail mengenai foto kegiatan, project karya siswa, atau prestasi ini..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">{{ old('description') }}</textarea>
+            <textarea name="description" rows="3" placeholder="Tuliskan keterangan detail mengenai dokumentasi kegiatan ini..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">{{ old('description') }}</textarea>
         </div>
 
         <!-- Tombol Aksi -->

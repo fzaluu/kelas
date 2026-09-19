@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('class_id')->default(1);
+            $table->foreignId('class_id')->constrained('classes')->onDelete('cascade'); // ✅ Dinamis via Foreign Key
             $table->enum('day', ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']);
             $table->string('subject_name');
             $table->string('teacher_name')->nullable();

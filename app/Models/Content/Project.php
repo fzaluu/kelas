@@ -33,4 +33,9 @@ class Project extends Model
     {
         return $this->hasMany(ProjectMember::class, 'project_id');
     }
+
+    public function projectMedia(): HasMany
+    {
+        return $this->hasMany(ProjectMedia::class, 'project_id')->orderBy('sort_order', 'asc');
+    }
 }

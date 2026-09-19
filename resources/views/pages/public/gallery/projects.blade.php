@@ -19,7 +19,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         @forelse ($projects as $project)
             @php
-                $filePath = optional($project->mediaFile)->storage_path ?? optional($project->mediaFile)->file_path;
+                $firstMedia = $project->projectMedia->first()?->mediaFile;
             @endphp
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col justify-between space-y-6 hover:border-blue-300 transition">
                 <div class="space-y-4">
@@ -29,9 +29,9 @@
                         </span>
                     </div>
 
-                    @if($filePath)
+                    @if($firstMedia)
                         <div class="h-44 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($filePath) }}" alt="{{ $project->title }}" class="w-full h-full object-cover">
+                            <img src="{{ $firstMedia->url }}" alt="{{ $project->title }}" class="w-full h-full object-cover">
                         </div>
                     @endif
 
@@ -44,9 +44,15 @@
                 <div class="pt-4 border-t border-slate-100 space-y-3">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tim Pengembang:</span>
                     <div class="flex flex-wrap gap-2">
-                        <span class="text-xs text-slate-700 font-bold bg-slate-50 px-3 py-1 rounded-lg border border-slate-200">
-                            👤 Siswa XI PPLG 2
-                        </span>
+                        @forelse($project->members as $pm)
+                            <span class="text-xs text-slate-700 font-bold bg-slate-50 px-3 py-1 rounded-lg border border-slate-200">
+                                👤 {{ $pm->member->name ?? 'Siswa XI PPLG 2' }}
+                            </span>
+                        @empty
+                            <span class="text-xs text-slate-700 font-bold bg-slate-50 px-3 py-1 rounded-lg border border-slate-200">
+                                👤 Siswa XI PPLG 2
+                            </span>
+                        @endforelse
                     </div>
                 </div>
             </div>

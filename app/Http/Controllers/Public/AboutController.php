@@ -23,7 +23,7 @@ class AboutController extends Controller
 
     public function profile()
     {
-        $classId = 1; // Scope XI PPLG 2
+        $classId = SchoolClass::getActiveId();
 
         $ClassProfileModel  = $this->getModelClass('ClassProfile', 'Core');
         $ClassPositionModel = $this->getModelClass('ClassPosition', 'Core');
